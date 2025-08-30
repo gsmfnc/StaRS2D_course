@@ -1,0 +1,16 @@
+convert 1.png -crop 1200x600+1000-400 1_cropped.png
+convert 2.png -crop 1200x600+1000-400 2_cropped.png
+convert 3.png -crop 1200x600+1000-400 3_cropped.png
+convert 4.png -crop 1200x600+1000-400 4_cropped.png
+convert 5.png -crop 1200x600+1000-400 5_cropped.png
+convert 6.png -crop 1200x600+1000-400 6_cropped.png
+convert 7.png -crop 1200x600+1000-400 7_cropped.png
+convert 8.png -crop 1200x600+1000-400 8_cropped.png
+convert 9.png -crop 1200x600+1000-400 9_cropped.png
+convert 10.png -crop 1200x600+1000-400 10_cropped.png
+
+convert -delay 20 -loop 0 1_cropped.png 2_cropped.png 3_cropped.png 4_cropped.png 5_cropped.png 6_cropped.png 7_cropped.png 8_cropped.png 9_cropped.png 10_cropped.png thrust.gif
+
+convert thrust.gif -coalesce -repage 0x0 -crop 1200x600+1000-400 +repage thrust.gif
+
+xviewer thrust.gif
