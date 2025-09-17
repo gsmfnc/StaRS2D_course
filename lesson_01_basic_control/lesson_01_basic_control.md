@@ -234,7 +234,8 @@ However, we are ok with that as we are higher than the re-entry tower.
 
 If we keep giving these commands, Starship will not reach the destination point.
 As a matter of fact, it will just fly past it.
-First, we notice that when we are close to the tower, Starship is too high.
+First, we notice that when we are close to the tower, Starship is too high in
+the sky.
 So, what we could do is reducing the thrust command when we are close to the
 re-entry tower.
 This will make gravity "win" and get Starship to lose altitude.
@@ -243,12 +244,14 @@ close to zero (i.e. to the destination point), set the thrust command to $0.25$.
 We can measure the x position of Starship with `env.getStarshipXPosition()` and
 we will decrease the thrust command when we are below $100$ pixels to the
 destination point.
-Also, we want to slow down a little as we are closer to landing which requires
+Also, we want to slow down a little as we are closer to landing and we require
 carefulness.
 So, we will do the following: if the x position of Starship is below $100$
 pixels,
 then if Starship's angle is above 10 degrees, set thrust angle command to $2$
 degrees; otherwise, set it to zero.
+This way, Starship's x velocity $Vx$ will be smaller as $\theta$ will be
+smaller.
 The overall logic has been implemented with two nested if statements, as shown
 below.
 
@@ -272,13 +275,15 @@ To succeed, we need $\theta$ to be smaller than $0.5$ degrees and all the
 velocities below $0.1$ pixel/second.
 So, as Starship's x position is below 10 pixels, we will set a thrust angle
 command of $0.2$ degrees until $\theta$ becomes smaller than $0.5$ degrees.
+We will notice that this brings all the velocities inside the limits to succeed
+the landing.
 
 ![Landing.](imgs/coding_05.png)
 
 Running the script we find out that this is still not sufficient!
 We hit the tower because Starship does not manage to keep the altitude to $0$.
 The thrust command of $0.5$ that we gave to stop Starship losing altitude is not
-sufficient.
+sufficient as Starship is not completely upright.
 Let's substitute it with $0.51$ to have a slight push up.
 
 ![Landing.](imgs/coding_06.png)
