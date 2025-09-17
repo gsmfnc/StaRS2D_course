@@ -210,7 +210,9 @@ The overall script will look like as in the following image.
 Note that in order to actually give the thrust commands, we need to call
 `env.updateStarship(cmd)` at the end of the draw() function.
 
+
 ![Turn 1.](imgs/coding_01.png)
+
 
 If we hit the Run button now, we will see Starship starting to rotate, slowly
 losing altitude and hit the ground.
@@ -224,7 +226,9 @@ of the simulator.
 In this case, we need `env.getStarshipAngleInDegrees()`.
 The next image shows how the code turns out.
 
+
 ![Phase 1.](imgs/coding_02.png)
+
 
 By pressing the Run button, Starship rotates until it gets to $30$ degrees and
 then it starts translating to its left.
@@ -255,7 +259,9 @@ smaller.
 The overall logic has been implemented with two nested if statements, as shown
 below.
 
+
 ![Phase 2.](imgs/coding_03.png)
+
 
 Hitting the Run button, we will see Starship approaching the re-entry tower,
 slowing down and losing altitude until it hits the ground... whoops!
@@ -266,7 +272,9 @@ to give a thrust command of $0.5$ when the y position of Starship is around
 zero.
 We will use `env.getStarshipYPosition()` as depicted in the next image.
 
+
 ![Approach.](imgs/coding_04.png)
+
 
 This still does not succeed the landing!
 We need to further slow down and keep Starship more straight when we are close
@@ -278,13 +286,16 @@ command of $0.2$ degrees until $\theta$ becomes smaller than $0.5$ degrees.
 We will notice that this brings all the velocities inside the limits to succeed
 the landing.
 
+
 ![Landing.](imgs/coding_05.png)
+
 
 Running the script we find out that this is still not sufficient!
 We hit the tower because Starship does not manage to keep the altitude to $0$.
-The thrust command of $0.5$ that we gave to stop Starship losing altitude is not
+The thrust command of $0.5$ that we gave to stop losing altitude is not
 sufficient as Starship is not completely upright.
 Let's substitute it with $0.51$ to have a slight push up.
+
 
 ![Landing.](imgs/coding_06.png)
 
