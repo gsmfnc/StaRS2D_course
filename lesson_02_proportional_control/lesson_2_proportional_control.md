@@ -27,8 +27,69 @@ Outline of the lesson:
 
 ## Unexpected events
 
-wind gust example
+Random text; Random text; Random text; Random text; Random text; Random text;
+Random text; Random text; Random text; Random text; Random text; Random text;
+Random text; Random text; Random text; Random text; Random text; Random text;
+Random text; Random text; Random text; Random text; Random text; Random text;
+Random text; Random text; Random text; Random text; Random text; Random text;
+Random text; Random text; Random text; Random text; Random text; Random text;
+Random text; Random text; Random text; Random text; Random text; Random text;
+Random text; Random text; Random text; Random text; Random text; Random text;
+Random text; Random text; Random text; Random text; Random text; Random text;
+Random text; Random text; Random text; Random text; Random text; Random text;
+Random text; Random text; Random text; Random text; Random text; Random text;
+Random text; Random text; Random text; Random text; Random text; Random text;
+Random text; Random text; Random text; Random text; Random text; Random text;
+Random text; Random text; Random text; Random text; Random text; Random text;
+Random text; Random text; Random text; Random text; Random text; Random text;
+Random text; Random text; Random text; Random text; Random text; Random text;
+Random text; Random text; Random text; Random text; Random text; Random text;
+Random text; Random text; Random text; Random text; Random text; Random text;
+Random text; Random text; Random text; Random text; Random text; Random text;
+Random text; Random text; Random text; Random text; Random text; Random text;
 
 ## A first solution
 
+Random text; Random text; Random text; Random text; Random text; Random text;
+Random text; Random text; Random text; Random text; Random text; Random text;
+Random text; Random text; Random text; Random text; Random text; Random text;
+Random text; Random text; Random text; Random text; Random text; Random text;
+Random text; Random text; Random text; Random text; Random text; Random text;
+Random text; Random text; Random text; Random text; Random text; Random text;
+Random text; Random text; Random text; Random text; Random text; Random text;
+Random text; Random text; Random text; Random text; Random text; Random text;
+Random text; Random text; Random text; Random text; Random text; Random text;
+Random text; Random text; Random text; Random text; Random text; Random text;
+Random text; Random text; Random text; Random text; Random text; Random text;
+Random text; Random text; Random text; Random text; Random text; Random text;
+Random text; Random text; Random text; Random text; Random text; Random text;
+Random text; Random text; Random text; Random text; Random text; Random text;
+Random text; Random text; Random text; Random text; Random text; Random text;
+Random text; Random text; Random text; Random text; Random text; Random text;
+Random text; Random text; Random text; Random text; Random text; Random text;
+Random text; Random text; Random text; Random text; Random text; Random text;
+Random text; Random text; Random text; Random text; Random text; Random text;
+Random text; Random text; Random text; Random text; Random text; Random text;
+
 ## PI (Proportional-Integral) controllers
+
+Random text; Random text; Random text; Random text; Random text; Random text;
+Random text; Random text; Random text; Random text; Random text; Random text;
+Random text; Random text; Random text; Random text; Random text; Random text;
+Random text; Random text; Random text; Random text; Random text; Random text;
+Random text; Random text; Random text; Random text; Random text; Random text;
+Random text; Random text; Random text; Random text; Random text; Random text;
+Random text; Random text; Random text; Random text; Random text; Random text;
+Random text; Random text; Random text; Random text; Random text; Random text;
+Random text; Random text; Random text; Random text; Random text; Random text;
+Random text; Random text; Random text; Random text; Random text; Random text;
+Random text; Random text; Random text; Random text; Random text; Random text;
+Random text; Random text; Random text; Random text; Random text; Random text;
+Random text; Random text; Random text; Random text; Random text; Random text;
+Random text; Random text; Random text; Random text; Random text; Random text;
+Random text; Random text; Random text; Random text; Random text; Random text;
+Random text; Random text; Random text; Random text; Random text; Random text;
+Random text; Random text; Random text; Random text; Random text; Random text;
+Random text; Random text; Random text; Random text; Random text; Random text;
+Random text; Random text; Random text; Random text; Random text; Random text;
+Random text; Random text; Random text; Random text; Random text; Random text;
