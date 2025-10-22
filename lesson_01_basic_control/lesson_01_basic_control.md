@@ -8,7 +8,7 @@ Engineering with StaRS 2D"!</p>
 <br>
 
 <p align="center">
-  <img src="https://github.com/gsmfnc/StaRS2D_course/tree/main/lesson_01_basic_control/imgs/animation.gif" />
+  <img src="https://github.com/gsmfnc/StaRS2D_course/blob/main/lesson_01_basic_control/imgs/animation.gif" />
 </p>
 
 <br>
@@ -64,7 +64,7 @@ file wherever you cloned the repository).
 Once you open <em>stars2d.pde</em>, the Processing window will look like this:
 
 <p align="center">
-  <img src="https://github.com/gsmfnc/StaRS2D_course/tree/main/lesson_01_basic_control/imgs/processing_screen.png" />
+  <img src="https://github.com/gsmfnc/StaRS2D_course/blob/main/lesson_01_basic_control/imgs/processing_screen.png" />
 </p>
 
 This code already includes an implementation of a working flight controller, so
@@ -85,7 +85,7 @@ These are only auxiliary variables to make the pre-designed flight controller
 work.
 
 <p align="center">
-  <img src="https://github.com/gsmfnc/StaRS2D_course/tree/main/lesson_01_basic_control/imgs/processing_screen_highlight_1.png" />
+  <img src="https://github.com/gsmfnc/StaRS2D_course/blob/main/lesson_01_basic_control/imgs/processing_screen_highlight_1.png" />
 </p>
 
 In Processing, the setup() function is executed only once right after the "Run"
@@ -94,7 +94,7 @@ In this case, it creates a window of size 1200x600 pixels and then it
 initializes 'env' and 'cmd'.
 
 <p align="center">
-  <img src="https://github.com/gsmfnc/StaRS2D_course/tree/main/lesson_01_basic_control/imgs/processing_screen_highlight_2.png" />
+  <img src="https://github.com/gsmfnc/StaRS2D_course/blob/main/lesson_01_basic_control/imgs/processing_screen_highlight_2.png" />
 </p>
 
 The draw() function is executed in loop right as soon as setup() terminates.
@@ -102,10 +102,10 @@ For every loop, it calls
 env.initialize() that creates the graphics shown below.
 
 <p align="center">
-  <img src="https://github.com/gsmfnc/StaRS2D_course/tree/main/lesson_01_basic_control/imgs/processing_screen_highlight_3.png" />
+  <img src="https://github.com/gsmfnc/StaRS2D_course/blob/main/lesson_01_basic_control/imgs/processing_screen_highlight_3.png" />
 </p>
 <p align="center">
-  <img src="https://github.com/gsmfnc/StaRS2D_course/tree/main/lesson_01_basic_control/imgs/graphics_highlight.png" />
+  <img src="https://github.com/gsmfnc/StaRS2D_course/blob/main/lesson_01_basic_control/imgs/graphics_highlight.png" />
 </p>
 
 Here, we can see:
@@ -123,7 +123,7 @@ draw().
 The following picture shows how the script should now look like.
 
 <p align="center">
-  <img src="https://github.com/gsmfnc/StaRS2D_course/tree/main/lesson_01_basic_control/imgs/blank_processing_script.png" />
+  <img src="https://github.com/gsmfnc/StaRS2D_course/blob/main/lesson_01_basic_control/imgs/blank_processing_script.png" />
 </p>
 
 ## Thrust vectoring
@@ -141,14 +141,14 @@ Varying 'val' in cmd.setThrustCommand(val) gradually from 0 to 1, you will see
 the animation of Starship changing like this:
 
 <p align="center">
-  <img src="https://github.com/gsmfnc/StaRS2D_course/tree/main/lesson_01_basic_control/imgs/thrust.gif" />
+  <img src="https://github.com/gsmfnc/StaRS2D_course/blob/main/lesson_01_basic_control/imgs/thrust.gif" />
 </p>
 
 Similarly, varying 'val' in cmd.setThrustAngleCommand(val) gradually from -30 to
 30, you will see:
 
 <p align="center">
-  <img src="https://github.com/gsmfnc/StaRS2D_course/tree/main/lesson_01_basic_control/imgs/thrust_angle.gif" />
+  <img src="https://github.com/gsmfnc/StaRS2D_course/blob/main/lesson_01_basic_control/imgs/thrust_angle.gif" />
 </p>
 
 ## Instrumentation
@@ -167,7 +167,7 @@ Finally, the instrumentation shows the percentage of thrust, the thrust angle
 and the elapsed time.
 
 <p align="center">
-  <img src="https://github.com/gsmfnc/StaRS2D_course/tree/main/lesson_01_basic_control/imgs/position_attitude.png" />
+  <img src="https://github.com/gsmfnc/StaRS2D_course/blob/main/lesson_01_basic_control/imgs/position_attitude.png" />
 </p>
 
 StaRS 2D provides the following functions to programmatically access the
@@ -197,7 +197,7 @@ To simplify the simulation model, you must provide '1' as an argument in the
 initialization of env, as shown below.
 
 <p align="center">
-  <img src="https://github.com/gsmfnc/StaRS2D_course/tree/main/lesson_01_basic_control/imgs/processing_screen_simplified_on_highlighted.png" />
+  <img src="https://github.com/gsmfnc/StaRS2D_course/blob/main/lesson_01_basic_control/imgs/processing_screen_simplified_on_highlighted.png" />
 </p>
 
 ## Rules
@@ -232,7 +232,7 @@ Note that in order to actually give the thrust commands, we need to call
 `env.updateStarship(cmd)` at the end of the draw() function.
 
 <p align="center">
-  <img src="https://github.com/gsmfnc/StaRS2D_course/tree/main/lesson_01_basic_control/imgs/coding_01.png" />
+  <img src="https://github.com/gsmfnc/StaRS2D_course/blob/main/lesson_01_basic_control/imgs/coding_01.png" />
 </p>
 
 If we hit the Run button now, we will see Starship starting to rotate, slowly
@@ -248,7 +248,7 @@ In this case, we need `env.getStarshipAngleInDegrees()`.
 The next image shows how the code turns out.
 
 <p align="center">
-  <img src="https://github.com/gsmfnc/StaRS2D_course/tree/main/lesson_01_basic_control/imgs/coding_02.png" />
+  <img src="https://github.com/gsmfnc/StaRS2D_course/blob/main/lesson_01_basic_control/imgs/coding_02.png" />
 </p>
 
 By pressing the Run button, Starship rotates until it gets to $30$ degrees and
@@ -281,7 +281,7 @@ The overall logic has been implemented with two nested if statements, as shown
 below.
 
 <p align="center">
-  <img src="https://github.com/gsmfnc/StaRS2D_course/tree/main/lesson_01_basic_control/imgs/coding_03.png" />
+  <img src="https://github.com/gsmfnc/StaRS2D_course/blob/main/lesson_01_basic_control/imgs/coding_03.png" />
 </p>
 
 Hitting the Run button, we will see Starship approaching the re-entry tower,
@@ -294,7 +294,7 @@ zero.
 We will use `env.getStarshipYPosition()` as depicted in the next image.
 
 <p align="center">
-  <img src="https://github.com/gsmfnc/StaRS2D_course/tree/main/lesson_01_basic_control/imgs/coding_04.png" />
+  <img src="https://github.com/gsmfnc/StaRS2D_course/blob/main/lesson_01_basic_control/imgs/coding_04.png" />
 </p>
 
 This still does not succeed the landing!
@@ -308,7 +308,7 @@ We will notice that this brings all the velocities inside the limits to succeed
 the landing.
 
 <p align="center">
-  <img src="https://github.com/gsmfnc/StaRS2D_course/tree/main/lesson_01_basic_control/imgs/coding_05.png" />
+  <img src="https://github.com/gsmfnc/StaRS2D_course/blob/main/lesson_01_basic_control/imgs/coding_05.png" />
 </p>
 
 Running the script we find out that this is still not sufficient!
@@ -318,7 +318,7 @@ sufficient as Starship is not completely upright.
 Let's substitute it with $0.51$ to have a slight push up.
 
 <p align="center">
-  <img src="https://github.com/gsmfnc/StaRS2D_course/tree/main/lesson_01_basic_control/imgs/coding_06.png" />
+  <img src="https://github.com/gsmfnc/StaRS2D_course/blob/main/lesson_01_basic_control/imgs/coding_06.png" />
 </p>
 
 We did it!
