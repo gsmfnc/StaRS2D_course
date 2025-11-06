@@ -13,7 +13,9 @@ Engineering with StaRS 2D"!</p>
 
 ---
 
-In the [previous lesson]() we managed to design our first flight controller to
+In the
+[previous lesson](https://github.com/gsmfnc/StaRS2D_course/blob/main/lesson_01_basic_control/lesson_01_basic_control.md)
+we managed to design our first flight controller to
 successfully land Starship onto the re-entry tower.
 In this lesson, we will point out the vulnerabilities of that controller and we
 will show how to design controllers in a smarter way.
@@ -22,74 +24,219 @@ will show how to design controllers in a smarter way.
 
 Outline of the lesson:
 1.  [Unexpected events](#unexpected-events)
-2.  [A first solution](#a-first-solution)
+2.  [P (Proportional) controllers](#p-proportional-controllers)
 3.  [PI (Proportional-Integral) controllers](#pi-proportional-integral-controllers)
 
 ## Unexpected events
 
-Random text; Random text; Random text; Random text; Random text; Random text;
-Random text; Random text; Random text; Random text; Random text; Random text;
-Random text; Random text; Random text; Random text; Random text; Random text;
-Random text; Random text; Random text; Random text; Random text; Random text;
-Random text; Random text; Random text; Random text; Random text; Random text;
-Random text; Random text; Random text; Random text; Random text; Random text;
-Random text; Random text; Random text; Random text; Random text; Random text;
-Random text; Random text; Random text; Random text; Random text; Random text;
-Random text; Random text; Random text; Random text; Random text; Random text;
-Random text; Random text; Random text; Random text; Random text; Random text;
-Random text; Random text; Random text; Random text; Random text; Random text;
-Random text; Random text; Random text; Random text; Random text; Random text;
-Random text; Random text; Random text; Random text; Random text; Random text;
-Random text; Random text; Random text; Random text; Random text; Random text;
-Random text; Random text; Random text; Random text; Random text; Random text;
-Random text; Random text; Random text; Random text; Random text; Random text;
-Random text; Random text; Random text; Random text; Random text; Random text;
-Random text; Random text; Random text; Random text; Random text; Random text;
-Random text; Random text; Random text; Random text; Random text; Random text;
-Random text; Random text; Random text; Random text; Random text; Random text;
+In our first lesson we designed a flight controller based on the simulator at
+our disposal.
+However, there are many effects that are not included in such a simulator and
+these may affect the result of Starship's re-entry task.
+For example, in this lesson we suppose that there is a wind gust disturbing
+Starship in the very first phase of the descent.
+So, to start the second lesson, let's modify the first lines of code as follows:
 
-## A first solution
+![a0_setup_mod.png](imgs/a0_setup_mod.png)
 
-Random text; Random text; Random text; Random text; Random text; Random text;
-Random text; Random text; Random text; Random text; Random text; Random text;
-Random text; Random text; Random text; Random text; Random text; Random text;
-Random text; Random text; Random text; Random text; Random text; Random text;
-Random text; Random text; Random text; Random text; Random text; Random text;
-Random text; Random text; Random text; Random text; Random text; Random text;
-Random text; Random text; Random text; Random text; Random text; Random text;
-Random text; Random text; Random text; Random text; Random text; Random text;
-Random text; Random text; Random text; Random text; Random text; Random text;
-Random text; Random text; Random text; Random text; Random text; Random text;
-Random text; Random text; Random text; Random text; Random text; Random text;
-Random text; Random text; Random text; Random text; Random text; Random text;
-Random text; Random text; Random text; Random text; Random text; Random text;
-Random text; Random text; Random text; Random text; Random text; Random text;
-Random text; Random text; Random text; Random text; Random text; Random text;
-Random text; Random text; Random text; Random text; Random text; Random text;
-Random text; Random text; Random text; Random text; Random text; Random text;
-Random text; Random text; Random text; Random text; Random text; Random text;
-Random text; Random text; Random text; Random text; Random text; Random text;
-Random text; Random text; Random text; Random text; Random text; Random text;
+By adding the line <em>env.setLevel(2)</em>, we add a wind gust going from the
+right of the screen towards the left for $y$ greater than 300 pixels.
+If we press Run now, you will notice that Starship fails its re-entry task!
+That's because our previous controller made Starship rotate to an angle equal 
+to 30 degrees but did not verify whether the angle became larger than that
+value.
+
+We can fix this problem using a logic-based solution, where we not only check
+whether the angle reached 30 degrees but also whether it became too large.
+One way to do this is to use a double if-statement as shown in the following
+picture.
+
+![a1_draw_mod.png](imgs/a1_draw_mod.png)
+
+We choose to check whether the angle is in between 29 e 31 degrees to stay
+around 30 degrees.
+We should do the same also with the other if-statements to avoid that new
+unexpected events compromise the mission.
+
+![a2_draw_mod.png](imgs/a2_draw_mod.png)
+
+Running this flight controller, it is possible to see that the thrust vectoring
+is rather shaky at the beginning (i.e. while Starship is inside the wind gust
+area). Not a very elegant solution...
+
+## P (Proportional) controllers
+
+To avoid that shaky behaviour that we saw with the previous solution, we can
+use the idea of proportional controllers.
+These are very popular in control engineering and they consist of assigning a
+control input that is proportional to the error with respect to the desired
+position.
+
+In our case, we want Starship to reach 30 degrees at the beginning, so the error
+can be computed as
+
+```math
+env.getStarshipAngleInDegrees() - 30
+```
+
+The further Starship's angle will be from 30, the larger the command will be.
+For example, if we used the instruction
+
+```math
+cmd.setThrustAngleCommand(env.getStarshipAngleInDegrees() - 30)
+```
+
+then, when Starship has an angle of zero degrees, we will be giving a
+$30$ degrees thrust angle command.
+On the other hand, when Starship comes close to $30$ degrees, let's say it is at
+$25$ degrees, the thrust angle command will be reduced to $5$.
+Also, if for any reason Starship reaches an angle larger than $30$ degrees, say
+$35$, then the thrust angle command will be $-5$ degrees, thus automatically
+making it rotate to the opposite direction to reach again the desired angle.
+Finally, only when Starship has reached exactly $30$ degrees we will be giving
+a zero thrust angle command, hence enforcing no more rotation.
+
+What is usually done is to multiply the error by some constant that we call
+the proportional gain $k_p$
+
+```math
+k_p(env.getStarshipAngleInDegrees() - 30)
+```
+
+Choosing a smaller or a larger gain, will result in a slower or a faster
+response of Starship to reach the desired angle.
+In the code we refer to $k_p$ as <em>anglePGain</em> that we choose to be $0.1$
+and the final code will look as follows.
+
+![a3_semi_proportional.png](imgs/a3_semi_proportional.png)
+
+Running the simulation with this flight controller will show a smoother
+thrust angle behaviour and a successfull re-entry mission!
+
+Exercise 1. Try to change anglePGain with larger and smaller values to see how
+the overall behaviour of Starship changes!
 
 ## PI (Proportional-Integral) controllers
 
-Random text; Random text; Random text; Random text; Random text; Random text;
-Random text; Random text; Random text; Random text; Random text; Random text;
-Random text; Random text; Random text; Random text; Random text; Random text;
-Random text; Random text; Random text; Random text; Random text; Random text;
-Random text; Random text; Random text; Random text; Random text; Random text;
-Random text; Random text; Random text; Random text; Random text; Random text;
-Random text; Random text; Random text; Random text; Random text; Random text;
-Random text; Random text; Random text; Random text; Random text; Random text;
-Random text; Random text; Random text; Random text; Random text; Random text;
-Random text; Random text; Random text; Random text; Random text; Random text;
-Random text; Random text; Random text; Random text; Random text; Random text;
-Random text; Random text; Random text; Random text; Random text; Random text;
-Random text; Random text; Random text; Random text; Random text; Random text;
-Random text; Random text; Random text; Random text; Random text; Random text;
-Random text; Random text; Random text; Random text; Random text; Random text;
-Random text; Random text; Random text; Random text; Random text; Random text;
-Random text; Random text; Random text; Random text; Random text; Random text;
-Random text; Random text; Random text; Random text; Random text; Random text;
-Random text; Random text; Random text; Random text; Random text; Random text;
-Random text; Random text; Random text; Random text; Random text; Random text;
+We have used a proportional controller to determine thrust angle commands but we
+still give thrust commands as the very first controller, i.e. trusting the
+simulator.
+Here, we try to use a proportional controller to define a thrust command to
+reach a desired descent velocity $Vy$.
+
+Assuming that our desired descent velocity is $-0.14$ pix/sec, we can use the
+following proportional control law:
+
+```math
+k_{p,2}(-0.14 - env.getStarshipVy())
+```
+
+We will refer to the thrust command proportional gain as <em>thrustPGain</em>
+and thus implement the controller for the first phase of descent as shown in
+the following figure.
+
+![a4_thrust_P.png](imgs/a4_thrust_P.png)
+
+Running the simulation, we can observe that Starship does not actually reach
+$Vy=-0.14$ pix/sec.
+This is a well-known problem with proportional controllers in some cases.
+We say that our controller does not converge to the desired value.
+The reasoning behind this undesired behaviour is the presence of gravity: the
+proportional control law gives a thrust command of zero when $Vy=-0.14$ but,
+as soon as it becomes zero, gravity will further reduce the velocity, generating
+again an error that will be compensated by a non-zero thrust command.
+You can see that if you increase <em>thrustPGain</em>, it will generate a shaky
+thrust command, whereas a smaller <em>thrustPGain</em> will not be able to keep
+the velocity close to the desired one.
+
+To solve this problem, we can add an integral term to our proportional
+controller, making it a proportional-integral controller.
+Mathematically speaking, this means that our control law will become
+
+```math
+k_{p,2}(-0.14 - env.getStarshipVy())+k_I\int_0^t(-0.14 - env.getStarshipVy())dt
+```
+
+where $k_I$ will be the integral gain.
+Computing the exact integral is not possible in practice, so we use the fact
+that it can be approximated by the summation of the error
+$(-0.14 - env.getStarshipVy())$ for every sampling time (i.e. every time we
+actually measure it).
+So, we will have to introduce an auxiliary variable called <em>thrustIError</em>
+that is zero at the beginning and will be updated with the current error for
+every sampling time.
+Also, we will call <em>thrustIGain</em> the integral gain $k_I$.
+
+![a5_thrust_PI_first.png](imgs/a5_thrust_PI_first.png)
+
+The code is becoming a little complicated.
+We re-organize the code defining four phases of landing.
+
+### Phase 1: Approach
+
+This first phase consists of moving towards the re-entry tower.
+To do so, we need to lose altitude and move towards Starship's left.
+
+First, we define an auxiliary variable called <em>phase</em> that we will use to
+determine in which of the four phases we currently are.
+
+During this phase we use a PI controller for the thrust command so to have a
+desired vertical velocity of $-0.14$ pix/sec.
+Moreover, we use a P controller to keep an angle of $30$ degrees.
+
+![a6_phase1.png](imgs/a6_phase1.png)
+
+### Phase 2: Lose altitude
+
+This phase starts when the $x$-coordinate of Starship is below $100$ pixels.
+Therefore, we set the variable <em>phase</em> equal to $2$ when such a condition
+is verified together with <em>phase</em> itself being equal to $1$.
+We do so to avoid that for some reason we go back to phase $2$ when we are in
+phase $3$ or $4$ (even though, switch to a previous phase may be useful in case
+of unexpected events).
+
+We will start losing altitude by reducing the desired vertical velocity to
+$-0.5$ pix/sec.
+Also, since we are getting closer to the re-entry tower, we start slowing down
+by reducing Starship's angle to $10$ degrees.
+
+![a7_phase2.png](imgs/a7_phase2.png)
+
+### Phase 3: Keep altitude and reduce angle
+
+This phase start when we have lost sufficient altitude, that is when we reached
+$y=0$.
+
+Having $y=0$ is ideal as it is the altitude of our landing point.
+Up until now, we defined the thrust command with respect to a desired velocity.
+To keep doing that, we will define our desired velocity proportionally to our
+desired $y$-coordinate.
+For example, we can say that $V_yd=0.1(0-env.getStarshipYPosition())$.
+In such a way, our desired velocity will be positive when the $y$-coordinate is
+below 0 pixels and negative otherwise.
+Also, the more the $y$-coordinate is "far" from $0$, the larger (positive or
+negative) vertical speed we will require.
+
+![a8_phase3.png](imgs/a8_phase3.png)
+
+### Phase 4: Keep altitude and further reduce angle
+
+This final phase starts when we are very close to the re-entry tower, hence
+when the $x$-coordinate is below $10$ pixels.
+
+The control objective is the same as before, we want to keep the altitude to
+zero.
+Moreover, we require an angle of $0.3$ degree so that the horizontal velocity
+lies inside the requirements for a successfull landing.
+
+![a9_phase4.png](imgs/a9_phase4.png)
+
+## Exercises
+
+1. Implement a y-position controller instead of a y-velocity controller.
+
+2. Implement a omega controller instead of a theta controller.
+
+3. Suppose that for emergency reasons, once you reached phase 2, Starship needs
+to go back to $y=300$.
+After doing so, you can finalize the landing.
