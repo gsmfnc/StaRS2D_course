@@ -54,7 +54,7 @@ following picture.
 
 ![a1_draw_mod.png](imgs/a1_draw_mod.png)
 
-Basically, we will push Starship towards an angle that is greater than $29$
+Basically, we will push Starship to an angle that is greater than $29$
 degrees when $\theta$ is smaller than $29$ degrees.
 Then, if $\theta$ gets larger than $31$ degrees, then we will give a thrust
 angle command to bring it back to a value smaller than $31$ degrees.
@@ -70,7 +70,7 @@ area).
 As a matter of fact, we are constantly switching the thrust angle command among
 three values: $-2$, $0$ and $2$ degrees.
 That's not a very elegant solution, we would prefer to have the thrust angle
-command to "continuously" vary rather than jumping from a value to another.
+command to vary "continuously" rather than jumping from a value to another.
 
 ## P (Proportional) controllers
 
@@ -82,7 +82,7 @@ value.
 
 In our case, we want Starship to reach $30$ degrees at the beginning, so the
 error will be the difference between $\theta$ and $30$ degrees, i.e.
-$e=\theta-30$.
+$error=\theta-30$.
 We could directly use this formula to assign a thrust angle command:
 
 ```
@@ -92,9 +92,9 @@ cmd.setThrustAngleCommand(env.getStarshipAngleInDegrees() - 30).
 In such a way, the more $\theta$ is far from $30$, the larger the command will
 be.
 For example, when Starship has a $\theta$ angle of zero degrees, we will be
-giving a $30$ degrees thrust angle command.
+giving a $30$ degrees of thrust angle command.
 On the other hand, when Starship comes close to $30$ degrees, let's say
-$25$ degrees, the thrust angle command will be $5$.
+$25$ degrees, the thrust angle command will be $5$ degrees.
 Also, if for any reason Starship reaches an angle larger than $30$ degrees, say
 $35$, then the thrust angle command will be $-5$ degrees, thus automatically
 making it rotate to the opposite direction to reach again the desired angle.
@@ -112,21 +112,23 @@ cmd.setThrustAngleCommand(0.1 * (env.getStarshipAngleInDegrees() - 30)).
 
 Choosing a smaller or a larger gain, will result in a slower or a faster
 response of Starship to reach the desired angle.
-In the code we refer to the proportional gain as <em>anglePGain</em> that we
-initialize to $0.1$ at the beginning of the code.
-Moreover, we will use a proportional controller also in the other parts of the
-code where we give thrust angle commands.
+In our code, we refer to the proportional gain as <em>anglePGain</em> that we
+initialize to $0.1$ at the beginning.
+Moreover, we will use a proportional controller also further in the code,
+changing the desired angle appropriately.
 
 ![a3_semi_proportional.png](imgs/a3_semi_proportional.png)
 
-Running the simulation with this flight controller will show a smoother
+Running the simulator with this flight controller will show a smoother
 thrust angle behaviour and a successfull re-entry mission!
 
 ---
 
 **Exercise 1.**
 Try to change anglePGain with smaller or larger values to see how
-the overall behaviour of Starship changes!
+the overall behaviour of Starship changes.
+
+---
 
 ## PI (Proportional-Integral) controllers
 
