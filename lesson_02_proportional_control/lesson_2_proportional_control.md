@@ -17,8 +17,8 @@ In the
 [previous lesson](https://github.com/gsmfnc/StaRS2D_course/blob/main/lesson_01_basic_control/lesson_01_basic_control.md)
 we managed to design our first flight controller to
 successfully land Starship onto the re-entry tower.
-In this lesson, we will point out the vulnerabilities of that controller and we
-will show how to design controllers in a smarter way.
+In this lesson, we will point out some of the vulnerabilities of that controller
+and we will show how to design controllers in a smarter way.
 
 ---
 
@@ -33,63 +33,68 @@ In our first lesson we designed a flight controller based on the simulator at
 our disposal.
 However, there are many effects that are not included in such a simulator and
 these may affect the result of Starship's re-entry task.
-For example, in this lesson we suppose that there is a wind gust disturbing
-Starship in the very first phase of the descent.
-So, to start the second lesson, let's modify the first lines of code as follows:
+For example, suppose that there is a wind gust disturbing
+Starship when its $y$-coordinate is higher than $300$ pixels.
+We can enable this disturbance by adding the line env.setLevel(2) in
+the setup function, as follows:
 
 ![a0_setup_mod.png](imgs/a0_setup_mod.png)
 
-By adding the line <em>env.setLevel(2)</em>, we add a wind gust going from the
-right of the screen towards the left for $y$ greater than 300 pixels.
-If we press Run now, you will notice that Starship fails its re-entry task!
-That's because our previous controller made Starship rotate to an angle equal 
-to 30 degrees but did not verify whether the angle became larger than that
-value.
+If we press Run now, you will notice Starship failing its re-entry task!
+That's because our previous controller makes Starship rotate to get its
+angle $\theta$ to $30$ degrees.
+However, in case $\theta$ becomes larger than that value, there is no
+mechanism to reduce it to $30$ degrees again.
 
-We can fix this problem using a logic-based solution, where we not only check
-whether the angle reached 30 degrees but also whether it became too large.
-One way to do this is to use a double if-statement as shown in the following
-picture.
+We can fix this problem using a logic-based solution, where we not only give a
+thrust angle command until $\theta$ reaches $30$ degrees but also another in
+case it becomes too large.
+One way to do this is to use a double if-statement as highlighted in the
+following picture.
 
 ![a1_draw_mod.png](imgs/a1_draw_mod.png)
 
-We choose to check whether the angle is in between 29 e 31 degrees to stay
-around 30 degrees.
+Basically, we will push Starship towards an angle that is greater than $29$
+degrees when $\theta$ is smaller than $29$ degrees.
+Then, if $\theta$ gets larger than $31$ degrees, then we will give a thrust
+angle command to bring it back to a value smaller than $31$ degrees.
+Overall, $\theta$ will stay around $30$ degrees.
 We should do the same also with the other if-statements to avoid that new
 unexpected events compromise the mission.
 
 ![a2_draw_mod.png](imgs/a2_draw_mod.png)
 
-Running this flight controller, it is possible to see that the thrust vectoring
+Running this new controller, it is possible to see that the thrust vectoring
 is rather shaky at the beginning (i.e. while Starship is inside the wind gust
-area). Not a very elegant solution...
+area).
+As a matter of fact, we are constantly switching the thrust angle command among
+three values: $-2$, $0$ and $2$ degrees.
+That's not a very elegant solution, we would prefer to have the thrust angle
+command to "continuously" vary rather than jumping from a value to another.
 
 ## P (Proportional) controllers
 
 To avoid that shaky behaviour that we saw with the previous solution, we can
-use the idea of proportional controllers.
+use proportional controllers.
 These are very popular in control engineering and they consist of assigning a
 control input that is proportional to the error with respect to the desired
-position.
+value.
 
-In our case, we want Starship to reach 30 degrees at the beginning, so the error
-can be computed as
+In our case, we want Starship to reach $30$ degrees at the beginning, so the
+error will be the difference between $\theta$ and $30$ degrees, i.e.
+$e=\theta-30$.
+We could directly use this formula to assign a thrust angle command:
 
-```math
-env.getStarshipAngleInDegrees() - 30
+```
+cmd.setThrustAngleCommand(env.getStarshipAngleInDegrees() - 30).
 ```
 
-The further Starship's angle will be from 30, the larger the command will be.
-For example, if we used the instruction
-
-```math
-cmd.setThrustAngleCommand(env.getStarshipAngleInDegrees() - 30)
-```
-
-then, when Starship has an angle of zero degrees, we will be giving a
-$30$ degrees thrust angle command.
-On the other hand, when Starship comes close to $30$ degrees, let's say it is at
-$25$ degrees, the thrust angle command will be reduced to $5$.
+In such a way, the more $\theta$ is far from $30$, the larger the command will
+be.
+For example, when Starship has a $\theta$ angle of zero degrees, we will be
+giving a $30$ degrees thrust angle command.
+On the other hand, when Starship comes close to $30$ degrees, let's say
+$25$ degrees, the thrust angle command will be $5$.
 Also, if for any reason Starship reaches an angle larger than $30$ degrees, say
 $35$, then the thrust angle command will be $-5$ degrees, thus automatically
 making it rotate to the opposite direction to reach again the desired angle.
@@ -97,23 +102,30 @@ Finally, only when Starship has reached exactly $30$ degrees we will be giving
 a zero thrust angle command, hence enforcing no more rotation.
 
 What is usually done is to multiply the error by some constant that we call
-the proportional gain $k_p$
+the proportional gain.
+In our case, we will use a gain equal to $0.1$, so the thrust angle command
+controller will be
 
-```math
-k_p(env.getStarshipAngleInDegrees() - 30)
+```
+cmd.setThrustAngleCommand(0.1 * (env.getStarshipAngleInDegrees() - 30)).
 ```
 
 Choosing a smaller or a larger gain, will result in a slower or a faster
 response of Starship to reach the desired angle.
-In the code we refer to $k_p$ as <em>anglePGain</em> that we choose to be $0.1$
-and the final code will look as follows.
+In the code we refer to the proportional gain as <em>anglePGain</em> that we
+initialize to $0.1$ at the beginning of the code.
+Moreover, we will use a proportional controller also in the other parts of the
+code where we give thrust angle commands.
 
 ![a3_semi_proportional.png](imgs/a3_semi_proportional.png)
 
 Running the simulation with this flight controller will show a smoother
 thrust angle behaviour and a successfull re-entry mission!
 
-Exercise 1. Try to change anglePGain with larger and smaller values to see how
+---
+
+**Exercise 1.**
+Try to change anglePGain with smaller or larger values to see how
 the overall behaviour of Starship changes!
 
 ## PI (Proportional-Integral) controllers
@@ -233,10 +245,10 @@ lies inside the requirements for a successfull landing.
 
 ## Exercises
 
-1. Implement a y-position controller instead of a y-velocity controller.
+2. Implement a y-position controller instead of a y-velocity controller.
 
-2. Implement a omega controller instead of a theta controller.
+3. Implement a omega controller instead of a theta controller.
 
-3. Suppose that for emergency reasons, once you reached phase 2, Starship needs
+4. Suppose that for emergency reasons, once you reached phase 2, Starship needs
 to go back to $y=300$.
 After doing so, you can finalize the landing.
