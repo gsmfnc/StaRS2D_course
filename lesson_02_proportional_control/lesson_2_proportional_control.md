@@ -168,6 +168,8 @@ proportional control law gives a thrust command of zero when $V_y=-0.14$ but,
 as soon as it becomes zero, gravity will further reduce the velocity, generating
 again an error that will be compensated by a non-zero thrust command.
 
+---
+
 **Exercise 2.**
 Change the proportional gain <em>thrustPGain</em> to see that
 larger values will lead to a shaky
@@ -175,6 +177,8 @@ thrust command that keeps the vertical speed $V_y$ shaking around the desired
 one (no convergence),
 whereas smaller values will not be able to keep
 the velocity close to the desired one (convergence with a static error).
+
+---
 
 A classical solution to this problem is the addition of
 an integral term, making it a proportional-integral controller.
@@ -262,6 +266,8 @@ lies inside the requirements for a successfull landing.
 
 ![a9_phase4.png](imgs/a9_phase4.png)
 
+---
+
 **Exercise 3.**
 We have implement a thrust command controller based on desired vertical
 velocities.
@@ -280,3 +286,5 @@ Add an additional "emergency" phase that you activate as soon as you reach phase
 $2$.
 During the emergency phase, Starship needs to go back to $y=300$ pixels.
 After doing so, you can finalize the landing.
+
+---
