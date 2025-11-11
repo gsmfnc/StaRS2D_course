@@ -167,7 +167,9 @@ presence of gravity: the
 proportional control law gives a thrust command of zero when $V_y=-0.14$ but,
 as soon as it becomes zero, gravity will further reduce the velocity, generating
 again an error that will be compensated by a non-zero thrust command.
-You can play with the proportional gain <em>thrustPGain</em> and see that
+
+**Exercise 2.**
+Change the proportional gain <em>thrustPGain</em> to see that
 larger values will lead to a shaky
 thrust command that keeps the vertical speed $V_y$ shaking around the desired
 one (no convergence),
@@ -179,14 +181,14 @@ an integral term, making it a proportional-integral controller.
 Mathematically speaking, this means that we will assign the thrust command as
 
 ```math
-0.3(-0.14 - V_y)+0.1\int_0^t(-0.14-V_y)dt
+thrust=0.3(-0.14 - V_y)+0.1\int_0^t(-0.14-V_y)dt
 ```
 
 where $0.3$ is again the proportional gain and $0.1$ is the integral gain.
 
-Computing the exact integral is not possible in practice, so we use the fact
-that the integral can be approximated with the sum of all the errors up until
-the current time.
+Computing the exact integral is usually not possible in practice, so we use the
+fact that the integral can be approximated with the sum of all the errors up
+until the current time.
 To do so, we will have to introduce an auxiliary variable called
 <em>thrustIError</em>
 that is zero at the beginning and we will sum to it the current error for
@@ -202,7 +204,7 @@ Let's re-organize it defining four phases of landing.
 ### Phase 1: Approach
 
 This first phase consists of moving towards the re-entry tower.
-To do so, we need to lose altitude and move towards Starship's left.
+To do so, we need to lose height and move towards Starship's left.
 
 First, we define an auxiliary variable called <em>phase</em> that we will use to
 determine in which of the four phases we currently are.
@@ -213,57 +215,68 @@ Moreover, we use a P controller to keep an angle of $30$ degrees.
 
 ![a6_phase1.png](imgs/a6_phase1.png)
 
-### Phase 2: Lose altitude
+### Phase 2: Lose height 
 
 This phase starts when the $x$-coordinate of Starship is below $100$ pixels.
 Therefore, we set the variable <em>phase</em> equal to $2$ when such a condition
 is verified together with <em>phase</em> itself being equal to $1$.
 We do so to avoid that for some reason we go back to phase $2$ when we are in
 phase $3$ or $4$ (even though, switch to a previous phase may be useful in case
-of unexpected events).
+of unexpected events...).
 
-We will start losing altitude by reducing the desired vertical velocity to
+We will start losing height by reducing the desired vertical velocity to
 $-0.5$ pix/sec.
-Also, since we are getting closer to the re-entry tower, we start slowing down
-by reducing Starship's angle to $10$ degrees.
+Also, since we are getting closer to the re-entry tower, we start reducing
+the horizontal velocity by reducing Starship's angle to $10$ degrees.
 
 ![a7_phase2.png](imgs/a7_phase2.png)
 
-### Phase 3: Keep altitude and reduce angle
+### Phase 3: Keep height and reduce angle
 
-This phase start when we have lost sufficient altitude, that is when we reached
-$y=0$.
+This phase start when we have lost sufficient height , that is when we
+$y$-coordinate of Starship is equal to zero.
 
-Having $y=0$ is ideal as it is the altitude of our landing point.
+Having $y=0$ is ideal as it is the height of our landing point, so we want to
+keep such a value.
 Up until now, we defined the thrust command with respect to a desired velocity.
 To keep doing that, we will define our desired velocity proportionally to our
 desired $y$-coordinate.
-For example, we can say that $V_yd=0.1(0-env.getStarshipYPosition())$.
+For example, we can say that our desired velocity is $0.1(0-y)$, where $0.1$ is
+the proportional gain.
 In such a way, our desired velocity will be positive when the $y$-coordinate is
 below 0 pixels and negative otherwise.
 Also, the more the $y$-coordinate is "far" from $0$, the larger (positive or
-negative) vertical speed we will require.
+negative) vertical speed we will demand.
 
 ![a8_phase3.png](imgs/a8_phase3.png)
 
-### Phase 4: Keep altitude and further reduce angle
+### Phase 4: Keep height and further reduce angle
 
 This final phase starts when we are very close to the re-entry tower, hence
 when the $x$-coordinate is below $10$ pixels.
 
-The control objective is the same as before, we want to keep the altitude to
+The control objective is the same as before, we want to keep the height to
 zero.
 Moreover, we require an angle of $0.3$ degree so that the horizontal velocity
 lies inside the requirements for a successfull landing.
 
 ![a9_phase4.png](imgs/a9_phase4.png)
 
-## Exercises
+**Exercise 3.**
+We have implement a thrust command controller based on desired vertical
+velocities.
+Try to implement a controller that is based on the $y$-position rather than
+$V_y$.
+In this case, you can ask to reach $y=0$ right from the beginning and then
+just keep moving horizontally towards the re-entry tower.
 
-2. Implement a y-position controller instead of a y-velocity controller.
+**Exercise 4.**
+The thrust angle command allows convergence to desired $\theta$ angles.
+Try to define the desired $\theta$ based on a desired $x$-velocity.
+In such a way, you have direct control of the horizontal speed of Starship.
 
-3. Implement a omega controller instead of a theta controller.
-
-4. Suppose that for emergency reasons, once you reached phase 2, Starship needs
-to go back to $y=300$.
+**Exercise 5.**
+Add an additional "emergency" phase that you activate as soon as you reach phase
+$2$.
+During the emergency phase, Starship needs to go back to $y=300$ pixels.
 After doing so, you can finalize the landing.
