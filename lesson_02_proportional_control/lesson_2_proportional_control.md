@@ -132,59 +132,72 @@ the overall behaviour of Starship changes.
 
 ## PI (Proportional-Integral) controllers
 
-We have used a proportional controller to determine thrust angle commands but we
-still give thrust commands as the very first controller, i.e. trusting the
-simulator.
-Here, we try to use a proportional controller to define a thrust command to
-reach a desired descent velocity $Vy$.
+We have now used a proportional controller to determine thrust angle commands
+to ensure that Starship reaches desired $\theta$ angles.
+In control theory, we say that a controller with such a property is stabilizing
+and $\theta$ converges to its desired value.
 
-Assuming that our desired descent velocity is $-0.14$ pix/sec, we can use the
-following proportional control law:
+We could design a similar controller also for the thrust command, so that we can
+ensure convergence of the vertical speed to some desired value.
+Therefore, let's define a proportional controller for the thrust command as
+well.
+Say that our desired descent velocity for the first phase is $-0.14$ pix/sec,
+then the error in this case would be $error=-0.14-V_y$.
+Thus, we can define a proportional controller using the following command:
 
-```math
-k_{p,2}(-0.14 - env.getStarshipVy())
+```
+cmd.setThrustCommand(0.3 * (-0.14 - env.getStarshipVy()))
 ```
 
+where we chose the proportional gain to be $0.3$.
 We will refer to the thrust command proportional gain as <em>thrustPGain</em>
 and thus implement the controller for the first phase of descent as shown in
 the following figure.
 
 ![a4_thrust_P.png](imgs/a4_thrust_P.png)
 
-Running the simulation, we can observe that Starship does not actually reach
-$Vy=-0.14$ pix/sec.
-This is a well-known problem with proportional controllers in some cases.
-We say that our controller does not converge to the desired value.
-The reasoning behind this undesired behaviour is the presence of gravity: the
-proportional control law gives a thrust command of zero when $Vy=-0.14$ but,
+Running the simulation, we can observe through the instrumentation that Starship
+does not actually reach the desired descent velocity.
+This is a well-known problem with proportional controllers in particular cases.
+We say that our controller converges to some value with a static error or does
+not converge at all.
+
+In our case of study, the reasoning behind this undesired behaviour is the
+presence of gravity: the
+proportional control law gives a thrust command of zero when $V_y=-0.14$ but,
 as soon as it becomes zero, gravity will further reduce the velocity, generating
 again an error that will be compensated by a non-zero thrust command.
-You can see that if you increase <em>thrustPGain</em>, it will generate a shaky
-thrust command, whereas a smaller <em>thrustPGain</em> will not be able to keep
-the velocity close to the desired one.
+You can play with the proportional gain <em>thrustPGain</em> and see that
+larger values will lead to a shaky
+thrust command that keeps the vertical speed $V_y$ shaking around the desired
+one (no convergence),
+whereas smaller values will not be able to keep
+the velocity close to the desired one (convergence with a static error).
 
-To solve this problem, we can add an integral term to our proportional
-controller, making it a proportional-integral controller.
-Mathematically speaking, this means that our control law will become
+A classical solution to this problem is the addition of
+an integral term, making it a proportional-integral controller.
+Mathematically speaking, this means that we will assign the thrust command as
 
 ```math
-k_{p,2}(-0.14 - env.getStarshipVy())+k_I\int_0^t(-0.14 - env.getStarshipVy())dt
+0.3(-0.14 - V_y)+0.1\int_0^t(-0.14-V_y)dt
 ```
 
-where $k_I$ will be the integral gain.
+where $0.3$ is again the proportional gain and $0.1$ is the integral gain.
+
 Computing the exact integral is not possible in practice, so we use the fact
-that it can be approximated by the summation of the error
-$(-0.14 - env.getStarshipVy())$ for every sampling time (i.e. every time we
-actually measure it).
-So, we will have to introduce an auxiliary variable called <em>thrustIError</em>
-that is zero at the beginning and will be updated with the current error for
-every sampling time.
-Also, we will call <em>thrustIGain</em> the integral gain $k_I$.
+that the integral can be approximated with the sum of all the errors up until
+the current time.
+To do so, we will have to introduce an auxiliary variable called
+<em>thrustIError</em>
+that is zero at the beginning and we will sum to it the current error for
+every execution of the draw() function.
+Also, we will call <em>thrustIGain</em> the integral gain.
 
 ![a5_thrust_PI_first.png](imgs/a5_thrust_PI_first.png)
 
-The code is becoming a little complicated.
-We re-organize the code defining four phases of landing.
+We can observe that convergence to the desired vertical speed is now achieved.
+However, the code is now becoming a little complicated.
+Let's re-organize it defining four phases of landing.
 
 ### Phase 1: Approach
 
