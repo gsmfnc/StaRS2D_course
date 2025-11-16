@@ -15,9 +15,9 @@ Engineering with StaRS 2D"!</p>
 
 Control engineering is becoming more and more important nowadays: just to
 give you an idea, the design of
-modern aircrafts, spaceships and autonomous cars widely relies on it.
+modern aircraft, spaceships and autonomous cars heavily relies on it.
 
-But... what is control engineering? Well, this course aims at giving you
+But... what is control engineering? Well, this course aims to give you the
 insights to answer this question by considering a current fascinating control
 engineering application: the <em>Starship re-entry task</em>.
 
@@ -99,7 +99,7 @@ initializes 'env' and 'cmd'.
 
 The draw() function is executed in loop right as soon as setup() terminates.
 For every loop, it calls
-env.initialize() that creates the graphics shown below.
+env.initialize() which creates the graphics shown below.
 
 <p align="center">
   <img src="https://github.com/gsmfnc/StaRS2D_course/blob/main/lesson_01_basic_control/imgs/processing_screen_highlight_3.png" />
@@ -120,7 +120,7 @@ First thing we will do is to delete the current flight controller.
 To do that, we have to remove the initialization of the auxiliary variables
 ('phase', 'velDes' and 'thrustAngleDes') and only keep env.initialize() in
 draw().
-The following picture shows how the script should now look like.
+The following picture shows how the script should now look.
 
 <p align="center">
   <img src="https://github.com/gsmfnc/StaRS2D_course/blob/main/lesson_01_basic_control/imgs/blank_processing_script.png" />
@@ -162,7 +162,7 @@ The velocity along the axes $x$ and $y$ is denoted with $Vx$ and $Vy$.
 It is expressed in pixel per second [pix/sec].
 The attitude is represented by the angle $\theta$ and its associated angular
 velocity is denoted with $\omega$.
-These are expressed in degrees [deg] and degree per second [deg/sec].
+These are expressed in degrees [deg] and degrees per second [deg/sec].
 Finally, the instrumentation shows the percentage of thrust, the thrust angle
 and the elapsed time.
 
@@ -171,7 +171,7 @@ and the elapsed time.
 </p>
 
 StaRS 2D provides the following functions to programmatically access the
-information of the instrumentation:
+information on the instrumentation:
 
 | Function | Description |
 | :---------------- | :-------------------- |
@@ -208,7 +208,7 @@ You fail the re-entry mission if:
 3.  You land too quickly (both velocity and angular velocity must be between
 -0.1 and 0.1 at the moment you reach the landing point).
 
-You succeed the descent and the landing if:
+You succeed in the descent and the landing if:
 1.  You reach any point in the square defined by $x$ and $y$ both in $[-1,1]$
 pixels while having $\theta$ in $[-0.5,0.5]$ degrees, $\omega$ in
 $[-0.1,0.1]$ degree/second and both $Vx$ and
@@ -216,18 +216,18 @@ $Vy$ in $[-0.1,0.1]$ pixel/second.
 
 # Your first flight controller design
 
-Since we have a simulator at out disposal, we will design our first flight
+Since we have a simulator at our disposal, we will design our first flight
 controller by slowly building up pieces and seeing how the simulation goes.
 
-To begin with, we will set a thrust command of $0.5$ (i.e.
-we add `cmd.setThrustCommand(0.5)` in the draw() function), that we know being
+To begin with, we will set a thrust command of $0.5$ (i.e.,
+we add `cmd.setThrustCommand(0.5)` in the draw() function), which we know is
 sufficient to "defeat"
 gravity when Starship is perfectly perpendicular to the ground.
 Then, since we need to move towards the re-entry tower, we need to push
 Starship to its left.
 To do so, we can give a thrust angle command of, e.g., $-2$ degrees, making
-Starship rotate counter clockwise.
-The overall script will look like as in the following image.
+Starship rotate counterclockwise.
+The overall script will look as in the following image.
 Note that in order to actually give the thrust commands, we need to call
 `env.updateStarship(cmd)` at the end of the draw() function.
 
@@ -241,7 +241,7 @@ Obviously, we need to make Starship stop rotating at some point.
 For example, we can make it stop around $30$ degrees.
 One possible way to proceed is to use an if statement: if Starship's angle is
 smaller than $30$ degrees, then give a thrust angle command of $-2$ degrees;
-otherwise, set thrust angle command to zero.
+otherwise, set the thrust angle command to zero.
 Note that we can measure the attitude of Starship using some built-in functions
 of the simulator.
 In this case, we need `env.getStarshipAngleInDegrees()`.
@@ -261,7 +261,7 @@ If we keep giving these commands, Starship will not reach the destination point.
 As a matter of fact, it will just fly past it.
 First, we notice that when we are close to the tower, Starship is too high in
 the sky.
-So, what we could do is reducing the thrust command when we are close to the
+So, what we could do is reduce the thrust command when we are close to the
 re-entry tower.
 This will make gravity "win" and get Starship to lose altitude.
 Let's do so with another if statement: if Starship's x position is sufficiently
@@ -273,8 +273,8 @@ Also, we want to slow down a little as we are closer to landing and we require
 carefulness.
 So, we will do the following: if the x position of Starship is below $100$
 pixels,
-then if Starship's angle is above 10 degrees, set thrust angle command to $2$
-degrees; otherwise, set it to zero.
+then if Starship's angle is above 10 degrees, set the thrust angle command to
+$2$ degrees; otherwise, set it to zero.
 This way, Starship's x velocity $Vx$ will be smaller as $\theta$ will be
 smaller.
 The overall logic has been implemented with two nested if statements, as shown
@@ -305,13 +305,13 @@ velocities below $0.1$ pixel/second.
 So, as Starship's x position is below 10 pixels, we will set a thrust angle
 command of $0.2$ degrees until $\theta$ becomes smaller than $0.5$ degrees.
 We will notice that this brings all the velocities inside the limits to succeed
-the landing.
+in the landing.
 
 <p align="center">
   <img src="https://github.com/gsmfnc/StaRS2D_course/blob/main/lesson_01_basic_control/imgs/coding_05.png" />
 </p>
 
-Running the script we find out that this is still not sufficient!
+Running the script, we find out that this is still not sufficient!
 We hit the tower because Starship does not manage to keep the altitude to $0$.
 The thrust command of $0.5$ that we gave to stop losing altitude is not
 sufficient as Starship is not completely upright.
