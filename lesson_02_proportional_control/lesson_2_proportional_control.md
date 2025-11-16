@@ -7,7 +7,9 @@ Welcome to the second lesson of "Learn the basics of Control
 Engineering with StaRS 2D"!</p>
 <br>
 
-![StaRS 2D](imgs/animation.gif)
+<p align="center">
+  <img src="https://github.com/gsmfnc/StaRS2D_course/blob/main/lesson_02_proportional_control/imgs/animation.gif" />
+</p>
 
 <br>
 
@@ -38,7 +40,9 @@ Starship when its $y$-coordinate is higher than $300$ pixels.
 We can enable this disturbance by adding the line env.setLevel(2) in
 the setup function, as follows:
 
-![a0_setup_mod.png](imgs/a0_setup_mod.png)
+<p align="center">
+  <img src="https://github.com/gsmfnc/StaRS2D_course/blob/main/lesson_02_proportional_control/imgs/a0_setup_mod.png" />
+</p>
 
 If we press Run now, you will notice Starship failing its re-entry task!
 That's because our previous controller makes Starship rotate to get its
@@ -52,7 +56,9 @@ case it becomes too large.
 One way to do this is to use a double if-statement as highlighted in the
 following picture.
 
-![a1_draw_mod.png](imgs/a1_draw_mod.png)
+<p align="center">
+  <img src="https://github.com/gsmfnc/StaRS2D_course/blob/main/lesson_02_proportional_control/imgs/a1_draw_mod.png" />
+</p>
 
 Basically, we will push Starship to an angle that is greater than $29$
 degrees when $\theta$ is smaller than $29$ degrees.
@@ -62,7 +68,9 @@ Overall, $\theta$ will stay around $30$ degrees.
 We should also do the same with the other if-statements to avoid new
 unexpected events compromising the mission.
 
-![a2_draw_mod.png](imgs/a2_draw_mod.png)
+<p align="center">
+  <img src="https://github.com/gsmfnc/StaRS2D_course/blob/main/lesson_02_proportional_control/imgs/a2_draw_mod.png" />
+</p>
 
 Running this new controller, it is possible to see that the thrust vectoring
 is rather shaky at the beginning (i.e., while Starship is inside the wind gust
@@ -117,7 +125,9 @@ initialize to $0.1$ at the beginning.
 Moreover, we will use a proportional controller also further in the code,
 changing the desired angle appropriately.
 
-![a3_semi_proportional.png](imgs/a3_semi_proportional.png)
+<p align="center">
+  <img src="https://github.com/gsmfnc/StaRS2D_course/blob/main/lesson_02_proportional_control/imgs/a3_semi_proportional.png" />
+</p>
 
 Running the simulator with this flight controller will show a smoother
 thrust angle behaviour and a successful re-entry mission!
@@ -154,7 +164,9 @@ We will refer to the thrust command proportional gain as <em>thrustPGain</em>
 and thus implement the controller for the first phase of descent as shown in
 the following figure.
 
-![a4_thrust_P.png](imgs/a4_thrust_P.png)
+<p align="center">
+  <img src="https://github.com/gsmfnc/StaRS2D_course/blob/main/lesson_02_proportional_control/imgs/a4_thrust_P.png" />
+</p>
 
 Running the simulation, we can observe through the instrumentation that Starship
 does not actually reach the desired descent velocity.
@@ -199,7 +211,9 @@ that is zero at the beginning and we will sum to it the current error for
 every execution of the draw() function.
 Also, we will call <em>thrustIGain</em> the integral gain.
 
-![a5_thrust_PI_first.png](imgs/a5_thrust_PI_first.png)
+<p align="center">
+  <img src="https://github.com/gsmfnc/StaRS2D_course/blob/main/lesson_02_proportional_control/imgs/a5_thrust_PI_first.png" />
+</p>
 
 We can observe that convergence to the desired vertical speed is now achieved.
 However, the code is now becoming a little complicated.
@@ -217,7 +231,9 @@ During this phase, we use a PI controller for the thrust command to have a
 desired vertical velocity of $-0.14$ pix/sec.
 Moreover, we use a P controller to keep an angle of $30$ degrees.
 
-![a6_phase1.png](imgs/a6_phase1.png)
+<p align="center">
+  <img src="https://github.com/gsmfnc/StaRS2D_course/blob/main/lesson_02_proportional_control/imgs/a6_phase1.png" />
+</p>
 
 ### Phase 2: Lose height 
 
@@ -233,7 +249,9 @@ $-0.5$ pix/sec.
 Also, since we are getting closer to the re-entry tower, we start reducing
 the horizontal velocity by reducing Starship's angle to $10$ degrees.
 
-![a7_phase2.png](imgs/a7_phase2.png)
+<p align="center">
+  <img src="https://github.com/gsmfnc/StaRS2D_course/blob/main/lesson_02_proportional_control/imgs/a7_phase2.png" />
+</p>
 
 ### Phase 3: Keep height and reduce angle
 
@@ -252,7 +270,9 @@ below 0 pixels and negative otherwise.
 Also, the more the $y$-coordinate is "far" from $0$, the larger (positive or
 negative) vertical speed we will demand.
 
-![a8_phase3.png](imgs/a8_phase3.png)
+<p align="center">
+  <img src="https://github.com/gsmfnc/StaRS2D_course/blob/main/lesson_02_proportional_control/imgs/a8_phase3.png" />
+</p>
 
 ### Phase 4: Keep height and further reduce angle
 
@@ -264,7 +284,9 @@ zero.
 Moreover, we require an angle of $0.3$ degree so that the horizontal velocity
 lies inside the requirements for a successful landing.
 
-![a9_phase4.png](imgs/a9_phase4.png)
+<p align="center">
+  <img src="https://github.com/gsmfnc/StaRS2D_course/blob/main/lesson_02_proportional_control/imgs/a9_phase4.png" />
+</p>
 
 ---
 
