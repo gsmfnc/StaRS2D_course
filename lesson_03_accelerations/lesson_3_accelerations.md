@@ -66,27 +66,33 @@ We begin with vertical control.
 A multi-loop control architecture means that we define our controller in
 multiple stages.
 
-The inner (or first) loop determines the thrust command to track a desired
-vertical speed $V_{y,des}$.
+add image of loops
+
+The outer loop determines the desired vertical speed vyDes.
+This is done by first definining the desired vertical position, which is set to
+$y=0$, and then computing the position error with respect to the current height.
+To avoid excessively large commands, we limit its value to vyMax$=1 pix/sec$.
+Therefore,
+
+```
+vyDes = max(-vyMax, min(vyMax, vyGain * (0 - env.getStarshipYPosition())));
+```
+
+The inner loop determines the thrust command to track the desired
+vertical speed.
 We will do so by implementing a simple proportional controller with gain
 thrustPGain.
 The code will look like:
 
 ```
-cmd.setThrustCommand(0.5 - thrustPGain * (env.getStarshipVy() - VyDes));
+cmd.setThrustCommand(0.5 - thrustPGain * (env.getStarshipVy() - vyDes));
 ```
 
-The outer (or second) loop determines the desired vertical speed $V_{y,des}$.
-This is done by first definining the desired vertical position, which is set to
-$y=0$, and then computing the position error with respect to the current height,
-i.e.
-
-```
-VyDes = max(-VyMax, min(VyMax, VyGain * (0 - env.getStarshipYPosition())));
-```
-
+Note that we also give a constant command of 0.5 that we know it is sufficient
+to defeat gravity when Starship is upright.
+Therefore, the proportional controller will only add or subtract values from
+this constant.
 These two nested loops compose the vertical controller of this lesson.
-This controller is kept active during the whole simulation.
 
 ### Horizontal control
 
@@ -100,40 +106,50 @@ Starship's horizontal position is within 200 pixels of the destination.
 During this phase, we keep a constant horizontal speed to move toward the
 landing tower.
 
-The horizontal control is a multi-loop controller composed of three nested
-loops.
-The inner loop is proportional angular-rate controller with gain
-thrustAnglePGain and computes the thrust angle command to track a desired
-angular speed $\omega_{des}$, i.e. considering the error between the current
-angular speed of Starship and the desired one:
+During this phase, the horizontal control is a multi-loop controller composed of
+three nested loops.
+
+The outer loop computes the desired Starship angle using a PI controller acting
+on the horizontal speed error.
+We will require a desired horizontal speed of $3 pix/sec$, thus the horizontal
+speed error vxError and its integral vxIError can be computed as
 
 ```
-cmd.setThrustAngleCommand(thrustAnglePGain * 
+vxError = 3.0 - env.getStarshipVx();
+vxIError = vxIError + vxError * env.getSamplingTime();
+```
+
+Note that differently from the previous lesson, the integral error is now
+computed as the sum of vxError multiplied by the sampling time.
+This is due to the fact that we are now using a dynamic model of Starship and
+every loop of Processing computes the future position of Starship $0.1$
+seconds from the current time.
+
+Now, to obtain the desired Starship angle, we just need to multiply these errors
+by the two PI gains, anglePGain and angleIGain, representing the proportional
+and the integral gains, respectively:
+
+```
+angleDes = anglePGain * vxError + angleIGain * vxIError;
+```
+
+The middle loop computes the desired Starship angular rate using a proportional
+controller acting on the Starship angle error, thus
+
+```
+omegaDes = omegaPGain * (angleDes - env.getStarshipAngleInDegrees());
+```
+
+where omegaPGain is the proportional gain.
+
+Finally, the inner loop computes the thrust angle command using a proportional
+controller acting on the angular rate error.
+We will define its proportional gain as thrustAnglePGain.
+Hence,
+
+```
+cmd.setThrustAngleCommand(thrustAnglePGain *
     (env.getStarshipOmegaInDegrees() - omegaDes));
-```
-
-The desired angular speed is defined in the middle loop.
-This loop is a PI controller that determines $\omega_{des}$ considering a
-desired Starship angle $\theta_{des}$.
-The error will be computed as the difference between the desired angle
-and the current Starship's angle:
-
-```
-omegaDes = omegaPGain * (thrustAngleDes - env.getStarshipAngleInDegrees()) +
-    omegaIGain * thrustAngleIError;
-```
-
-Here, omegaPGain and omegaIGain are the proportional and the integral gain,
-respectively.
-The variable thrustAngleIError represents the integral of the Starship's angle
-error.
-
-The outer loop computes the desired thrust angle based on the horizontal
-velocity error with respect to a desired horizontal speed of $3pix/sec$:
-
-```
-thrustAngleDes = 3.0 - env.getStarshipVx();
-thrustAngleIError = thrustAngleIError + thrustAngleDes;
 ```
 
 #### Slow down
@@ -150,5 +166,7 @@ At this point, the landing phase begins.
 During landing, the vertical position is maintained within the interval
 $[-1,1]$, while the commanded horizontal speed is reduced proportionally to the
 distance from the landing tower to a small residual value of $0.05pix/sec$.
+
+#### Handling phases switches and tuning
 
 ## Exercises
