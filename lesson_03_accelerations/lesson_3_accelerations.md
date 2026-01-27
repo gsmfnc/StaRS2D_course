@@ -69,7 +69,8 @@ multiple stages.
 The outer loop determines the desired vertical speed vyDes.
 This is done by first definining the desired vertical position, which is set to
 $y=0$, and then computing the position error with respect to the current height.
-To avoid excessively large commands, we limit its value to vyMax (= 1 pix/sec).
+The value of vyDes will be proportional to this error, with gain vyGain.
+To avoid excessively large commands, we limit its value to vyMax ($=1$ pix/sec).
 Therefore,
 
 ```
@@ -162,10 +163,9 @@ The outer loop computes the desired horizontal velocity vxDes with a
 proportional
 controller that considers an the error the distance from the target horizontal
 position $x=20$ pixels.
-The proportional gain is set to 0.016, i.e.a
 
 ```
-vxDes = 0.016 * (env.getStarshipXPosition() - 20.0);
+vxDes = vxPGain * (env.getStarshipXPosition() - 20.0);
 ```
 
 The first middle loop computes the desired Starship angle using a PI controller
@@ -226,22 +226,98 @@ successful landing.
 All these requirements can be achieved by defining vxDes as:
 
 ```
-vxDes = max(0.0, min(1.0, 0.1 * (env.getStarshipXPosition() - 10.0))) + 0.05;
+vxDes = max(0.0, min(1.0, vxPGain * (env.getStarshipXPosition() - 10.0))) + 0.05;
 ```
 
 #### Handling phases switches and tuning
+
+We now need to define the logic to switch between the mission's phases.
+
+The controller starts in the approach phase, which is represented by setting
+the variable `phase=1`{:.language-java}.
+
+The transition from phase 1 (approach) to phase 2 (slow down) occurs when
+Starship is 200 pixels away from the landing point along the horizontal
+direction.
+Note that this transition needs to be performed only if the current phase is
+equal to $1$ to avoid switching back to the slow down phase from the final
+phase (landing).
 
 ```
 if (abs(env.getStarshipXPosition() - env.getDestinationX()) < 200 &&
         phase == 1) {
     phase = 2;
 }
-if (abs(env.getStarshipYPosition()) < 1 && phase == 2) {
+```
+
+Finally, the controller switches to phase $3$ (landing) when Starship's vertical
+position is within $1$ pixel of the landing point's vertical coordinate.
+Again, to avoid a direct switch to phase $3$ from phase $1$, the transition must
+occur only if Starship is currently in the slow down phase (phase $2$).
+
+```
+if (abs(env.getStarshipYPosition() - env.getDestinationY()) < 1 && phase == 2) {
     phase = 3;
 }
 ```
 
+Throughout the lesson, we have introduced several gains for our P and PI
+controllers.
+Now, we have to tune them in order to have satisfactory performance.
+
+For the vertical controller, we need to tune three parameters.
+We start with vyMax, i.e. the maximum value for the vertical speed, that is set
+to $1$ pix/sec.
+Then, the proportional gain for the outer loop vyGain that is chosen equal to
+$1$ and the proportional gain of the inner loop thrustPGain that is also set to
+$1$.
+
 ```
+float vyGain = 0.1;
+float vyMax = 1.0;
+float thrustPGain = 1.0;
+```
+
+Regarding the horizontal controller, all the phases require tuning the
+gains for:
+1.  A PI controller for the desired Starship angle, with proportional gain
+`anglePGain = 1`{:.language-java} and `angleIGain = 0.5`{:.language-java};
+2.  A P controller for the desired angular rate with gain
+`omegaPGain = 1`{:.language-java};
+3.  A P controller for the thrust angle command with gain
+`thrustAnglePGain = 0.25`{:.language-java}.
+
+The slow down and landing phases also require an additional gain vxPGain for the
+computation of the desired horizontal velocity.
+This gain will be set to:
+1.  $0.016$ during the slow down phase;
+2.  $0.1$ during the landing phase.
+
+Finally, during the landing phase, the integral gain angleIGain will be chosen
+as $0.1$, while the proportional gain omegaPGain will be $2$.
+Therefore, we will define two new variables angleIGainLanding and
+omegaPGainLanding that reflect their phase-specific use.
+
+```
+float vxPGain = 0.016;
+float anglePGain = 1.0;
+float angleIGain = 0.5;
+float omegaPGain = 1.0;
+float thrustAnglePGain = 0.25;
+
+float vxPGainLanding = 0.1;
+float angleIGainLanding = 0.1;
+float omegaPGainLanding = 2.0;
+```
+
+The overall Processing code should look like this:
+
+```
+Environment env;
+Command cmd;
+
+int phase = 1;
+
 // vertical controller variables
 float vyDes;
 float vyGain = 0.1;
@@ -252,6 +328,7 @@ float thrustPGain = 1.0;
 // horizontal controller variables
 float vxError;
 float vxIError = 0.0;
+float vxPGain = 0.016;
 
 float angleDes;
 float anglePGain = 1.0;
@@ -266,6 +343,85 @@ float vxDes;
 
 float angleIGainLanding = 0.1;
 float omegaPGainLanding = 2.0;
+float vxPGainLanding = 0.1;
+
+void setup() {
+    size(1200, 600);
+    
+    env = new Environment();
+    cmd = new Command();
+}
+
+void draw() {
+    env.initialize();
+    
+    // -------------------------------------------------------------------------
+    // ------------------------- Controller design -----------------------------
+    // -------------------------------------------------------------------------
+    // Vertical control
+    vyDes = max(-vyMax, min(vyMax, - vyGain * env.getStarshipYPosition()));
+    cmd.setThrustCommand(0.5 - thrustPGain * (env.getStarshipVy() - vyDes));
+        
+    // Horizontal control
+    // Phase 1: approach
+    if (phase == 1) {
+        vxError = 3.0 - env.getStarshipVx();
+        vxIError = vxIError + vxError * env.getSamplingTime();
+
+        angleDes = anglePGain * vxError + angleIGain * vxIError;
+        omegaDes = omegaPGain * (angleDes - env.getStarshipAngleInDegrees());
+
+        cmd.setThrustAngleCommand(thrustAnglePGain *
+            (env.getStarshipOmegaInDegrees() - omegaDes));
+    }
+
+    // Phase 2: Slow down
+    if (phase == 2) {    
+        // Horizontal control
+        vxDes = vxPGain * (env.getStarshipXPosition() - 20.0);
+
+        vxError = vxDes - env.getStarshipVx();
+        vxIError = vxIError + vxError * env.getSamplingTime();
+
+        angleDes = anglePGain * vxError + angleIGain * vxIError;
+        omegaDes = omegaPGain * (angleDes - env.getStarshipAngleInDegrees());
+
+        cmd.setThrustAngleCommand(thrustAnglePGain *
+            (env.getStarshipOmegaInDegrees() - omegaDes));
+    }
+
+    // Phase 3: Landing
+    if (phase == 3) {
+        // Horizontal control
+        vxDes = max(0.0, min(1.0,
+            vxPGainLanding * (env.getStarshipXPosition() - 10.0))) + 0.05;
+
+        vxError = vxDes - env.getStarshipVx();
+        vxIError = vxIError + vxError * env.getSamplingTime();
+
+        angleDes = anglePGain * vxError + angleIGain * vxIError;
+        omegaDes = omegaPGainLanding * (angleDes -
+            env.getStarshipAngleInDegrees());
+
+        cmd.setThrustAngleCommand(thrustAnglePGain *
+            (env.getStarshipOmegaInDegrees() - omegaDes));
+    }
+
+    // Phases switching
+    if (abs(env.getStarshipXPosition() - env.getDestinationX()) < 200 &&
+            phase == 1) {
+        phase = 2;
+    }
+    if (abs(env.getStarshipYPosition()) < 1 && phase == 2) {
+        phase = 3;
+    }
+    // -------------------------------------------------------------------------
+    // -------------------------------------------------------------------------
+    // -------------------------------------------------------------------------
+
+    // Update
+    env.updateStarship(cmd);
+}
 ```
 
 ## Exercises
