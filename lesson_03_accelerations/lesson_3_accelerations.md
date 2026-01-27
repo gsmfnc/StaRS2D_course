@@ -66,12 +66,10 @@ We begin with vertical control.
 A multi-loop control architecture means that we define our controller in
 multiple stages.
 
-add image of loops
-
 The outer loop determines the desired vertical speed vyDes.
 This is done by first definining the desired vertical position, which is set to
 $y=0$, and then computing the position error with respect to the current height.
-To avoid excessively large commands, we limit its value to vyMax$=1 pix/sec$.
+To avoid excessively large commands, we limit its value to vyMax (= 1 pix/sec).
 Therefore,
 
 ```
@@ -111,7 +109,7 @@ three nested loops.
 
 The outer loop computes the desired Starship angle using a PI controller acting
 on the horizontal speed error.
-We will require a desired horizontal speed of $3 pix/sec$, thus the horizontal
+We will require a desired horizontal speed of $3$ pix/sec, thus the horizontal
 speed error vxError and its integral vxIError can be computed as
 
 ```
@@ -148,8 +146,7 @@ We will define its proportional gain as thrustAnglePGain.
 Hence,
 
 ```
-cmd.setThrustAngleCommand(thrustAnglePGain *
-    (env.getStarshipOmegaInDegrees() - omegaDes));
+cmd.setThrustAngleCommand(thrustAnglePGain * (env.getStarshipOmegaInDegrees() - omegaDes));
 ```
 
 #### Slow down
@@ -157,6 +154,53 @@ cmd.setThrustAngleCommand(thrustAnglePGain *
 Once Starship's horizontal position is within 200 pixels of the destination,
 we implement a PI controller to get Starship closer to the target horizontal
 position, specifically toward $x=20$ pixels.
+
+During this phase, the horizontal controller is implemented as a multi-loop
+architecture with four nested loops.
+
+The outer loop computes the desired horizontal velocity vxDes with a
+proportional
+controller that considers an the error the distance from the target horizontal
+position $x=20$ pixels.
+The proportional gain is set to 0.016, i.e.a
+
+```
+vxDes = 0.016 * (env.getStarshipXPosition() - 20.0);
+```
+
+The first middle loop computes the desired Starship angle using a PI controller
+acting on the horizontal velocity error.
+Therefore, just like the horizontal controller of the approach phase, we will
+need to compute the error vxError and its integral vxIError and then define
+angleDes:
+
+```
+vxError  = vxDes - env.getStarshipVx();
+vxIError = vxIError + vxError * env.getSamplingTime();
+
+angleDes = anglePGain * vxError + angleIGain * vxIError;
+```
+
+The second middle loop computes the desired angular rate omegaDes using a
+proportional controller acting on the Starship angle error:
+
+```
+omegaDes = omegaPGain * (angleDes - env.getStarshipAngleInDegrees());
+```
+
+Finally, the inner loop computes the thrust angle command using a proportional
+controller acting on the angular rate error:
+
+```
+cmd.setThrustAngleCommand(thrustAnglePGain * (env.getStarshipOmegaInDegrees() - omegaDes));
+```
+
+Notice that this horizontal controller is very similar to the one of the
+approach phase.
+The only difference relies on the definition of the desired horizontal speed
+vxDes.
+Here, vxDes is defined through an outer loop whereas it was fixed to
+$3$ pix/sec during the approach phase.
 
 #### Landing
 
@@ -167,6 +211,61 @@ During landing, the vertical position is maintained within the interval
 $[-1,1]$, while the commanded horizontal speed is reduced proportionally to the
 distance from the landing tower to a small residual value of $0.05pix/sec$.
 
+During this phase, the controller is again composed of four nested loops.
+The structure of the controller is identical to the slow down phase controller,
+with the only difference being the computation of the desired horizontal speed.
+
+During landing, the desired horizonal velocity vxDes is defined so that it is:
+-   always positive;
+-   bounded by a maximum value, chosen as $1$;
+-   proportional to the distance from the point $x=10$ pixels (with a
+proportional gain of $0.1$).
+When Starship reaches $x<10$, the desired horizontal speed is no longer reduced
+proportionally but fixed to a constant value of $0.05$ pix/sec, ensuring a
+successful landing.
+All these requirements can be achieved by defining vxDes as:
+
+```
+vxDes = max(0.0, min(1.0, 0.1 * (env.getStarshipXPosition() - 10.0))) + 0.05;
+```
+
 #### Handling phases switches and tuning
+
+```
+if (abs(env.getStarshipXPosition() - env.getDestinationX()) < 200 &&
+        phase == 1) {
+    phase = 2;
+}
+if (abs(env.getStarshipYPosition()) < 1 && phase == 2) {
+    phase = 3;
+}
+```
+
+```
+// vertical controller variables
+float vyDes;
+float vyGain = 0.1;
+float vyMax = 1.0;
+
+float thrustPGain = 1.0;
+
+// horizontal controller variables
+float vxError;
+float vxIError = 0.0;
+
+float angleDes;
+float anglePGain = 1.0;
+float angleIGain = 0.5;
+
+float omegaDes;
+float omegaPGain = 1.0;
+
+float thrustAnglePGain = 0.25;
+
+float vxDes;
+
+float angleIGainLanding = 0.1;
+float omegaPGainLanding = 2.0;
+```
 
 ## Exercises
