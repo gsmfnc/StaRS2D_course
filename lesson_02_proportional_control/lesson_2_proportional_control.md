@@ -77,7 +77,8 @@ is rather shaky at the beginning (i.e., while Starship is inside the wind gust
 area).
 As a matter of fact, we are constantly switching the thrust angle command among
 three values: $-2$, $0$ and $2$ degrees.
-That's not a very elegant solution, we would prefer to have the thrust angle
+That's not a very elegant solution!
+We would prefer to have the thrust angle
 command vary "continuously" rather than jumping from one value to another.
 
 ## P (Proportional) controllers

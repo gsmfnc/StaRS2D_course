@@ -58,6 +58,10 @@ by the inverse of the Starship's mass, while the angular acceleration is
 obtained by multiplying the torque by the inverse of the moment of inertia.
 Then, simple integration of these acceleration equations using a sampling time
 of $T_s=0.1$ seconds produces the motion dynamics.
+You don't really need to understand the meaning of this sentence: it is
+sufficient to understand that every execution of the Processing's loop()
+function computes the future position of Starship $0.1$ seconds from the current
+time, assuming that the commands you give are applied for $0.1$ seconds.
 
 ## Multi-loop control
 ### Vertical control
@@ -234,7 +238,7 @@ vxDes = max(0.0, min(1.0, vxPGain * (env.getStarshipXPosition() - 10.0))) + 0.05
 We now need to define the logic to switch between the mission's phases.
 
 The controller starts in the approach phase, which is represented by setting
-the variable `phase=1`{:.language-java}.
+the variable `phase=1`.
 
 The transition from phase 1 (approach) to phase 2 (slow down) occurs when
 Starship is 200 pixels away from the landing point along the horizontal
@@ -281,11 +285,11 @@ float thrustPGain = 1.0;
 Regarding the horizontal controller, all the phases require tuning the
 gains for:
 1.  A PI controller for the desired Starship angle, with proportional gain
-`anglePGain = 1`{:.language-java} and `angleIGain = 0.5`{:.language-java};
+`anglePGain = 1` and `angleIGain = 0.5`;
 2.  A P controller for the desired angular rate with gain
-`omegaPGain = 1`{:.language-java};
+`omegaPGain = 1`;
 3.  A P controller for the thrust angle command with gain
-`thrustAnglePGain = 0.25`{:.language-java}.
+`thrustAnglePGain = 0.25`.
 
 The slow down and landing phases also require an additional gain vxPGain for the
 computation of the desired horizontal velocity.
@@ -295,8 +299,8 @@ This gain will be set to:
 
 Finally, during the landing phase, the integral gain angleIGain will be chosen
 as $0.1$, while the proportional gain omegaPGain will be $2$.
-Therefore, we will define two new variables angleIGainLanding and
-omegaPGainLanding that reflect their phase-specific use.
+Therefore, we will define two new variable names, angleIGainLanding and
+omegaPGainLanding, that reflect their phase-specific use.
 
 ```
 float vxPGain = 0.016;
@@ -425,3 +429,16 @@ void draw() {
 ```
 
 ## Exercises
+
+**Exercise 1.**
+What would you do to make Starship reach $y=0$ quicker?
+Try to find and tune the proper parameter.
+
+**Exercise 2.**
+Now, try to speed up the approach phase by enforcing a larger desired horizontal
+speed.
+
+**Exercise 3.**
+Modify the controller so that Starship reaches $x=0$ before reaching $y=0$.
+At this point, you will need to drive the horizontal speed to zero and slowly
+descend to reach the landing point.
