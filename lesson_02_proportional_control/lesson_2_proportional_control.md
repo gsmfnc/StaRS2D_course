@@ -91,7 +91,7 @@ value.
 
 In our case, we want Starship to reach $30$ degrees at the beginning, so the
 error will be the difference between $\theta$ and $30$ degrees, i.e.
-$error=\theta-30$.
+error $=\theta-30$.
 We could directly use this formula to assign a thrust angle command:
 
 ```
@@ -152,7 +152,7 @@ ensure convergence of the vertical speed to some desired value.
 Therefore, let us define a proportional controller for the thrust command as
 well.
 Say that our desired descent velocity for the first phase is $-0.14$ pix/sec:
-then, the error in this case would be error$=-0.14-V_y$.
+then, the error in this case would be error $=-0.14-V_y$.
 Thus, we can define a proportional controller using the following command:
 
 ```
