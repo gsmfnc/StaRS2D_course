@@ -134,7 +134,7 @@ thrust angle behaviour and a successful re-entry mission!
 ---
 
 **Exercise 1.**
-Experiment with anglePGain by assigning smaller or larger values and see how
+Experiment with `anglePGain` by assigning smaller or larger values and see how
 the overall behaviour of Starship changes.
 
 ---
