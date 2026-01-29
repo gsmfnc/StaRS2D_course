@@ -18,7 +18,7 @@ Engineering with StaRS 2D"!</p>
 In the
 [previous lesson](https://github.com/gsmfnc/StaRS2D_course/blob/main/lesson_01_basic_control/lesson_01_basic_control.md),
 we managed to design our first flight controller to
-successfully land Starship onto the re-entry tower.
+successfully land Starship on the re-entry tower.
 In this lesson, we will point out some of the vulnerabilities of that controller
 and we will show how to design controllers in a smarter way.
 
@@ -51,8 +51,8 @@ However, in case $\theta$ becomes larger than that value, there is no
 mechanism to reduce it to $30$ degrees again.
 
 We can fix this problem using a logic-based solution, where we not only give a
-thrust angle command until $\theta$ reaches $30$ degrees but also another in
-case it becomes too large.
+thrust angle command until $\theta$ reaches $30$ degrees but also another 
+command in case it becomes too large.
 One way to do this is to use a double if-statement as highlighted in the
 following picture.
 
@@ -77,16 +77,16 @@ is rather shaky at the beginning (i.e., while Starship is inside the wind gust
 area).
 As a matter of fact, we are constantly switching the thrust angle command among
 three values: $-2$, $0$ and $2$ degrees.
-That's not a very elegant solution!
+That is not a very elegant solution!
 We would prefer to have the thrust angle
 command vary "continuously" rather than jumping from one value to another.
 
 ## P (Proportional) controllers
 
-To avoid that shaky behaviour that we saw with the previous solution, we can
-use proportional controllers.
+To avoid the shaky behaviour we observed with the previous solution, we can
+use <em>Proportional controllers</em>.
 These are very popular in control engineering and they consist of assigning a
-control input that is proportional to the error with respect to the desired
+control input that is proportional to the error with respect to a desired
 value.
 
 In our case, we want Starship to reach $30$ degrees at the beginning, so the
@@ -98,7 +98,7 @@ We could directly use this formula to assign a thrust angle command:
 cmd.setThrustAngleCommand(env.getStarshipAngleInDegrees() - 30).
 ```
 
-In such a way, the more $\theta$ is far from $30$, the larger the command will
+In this way, the farther $\theta$ is from $30$, the larger the command will
 be.
 For example, when Starship has a $\theta$ angle of zero degrees, we will be
 giving a $30$ degree thrust angle command.
@@ -106,12 +106,12 @@ On the other hand, when Starship comes close to $30$ degrees, let's say
 $25$ degrees, the thrust angle command will be $5$ degrees.
 Also, if for any reason Starship reaches an angle larger than $30$ degrees, say
 $35$, then the thrust angle command will be $-5$ degrees, thus automatically
-making it rotate to the opposite direction to reach again the desired angle.
+making it rotate to the opposite direction to reach the desired angle again.
 Finally, only when Starship has reached exactly $30$ degrees we will be giving
 a zero thrust angle command, hence enforcing no more rotation.
 
 What is usually done is to multiply the error by some constant that we call
-the proportional gain.
+the <em>proportional gain</em>.
 In our case, we will use a gain equal to $0.1$, so the thrust angle command
 controller will be
 
@@ -120,11 +120,9 @@ cmd.setThrustAngleCommand(0.1 * (env.getStarshipAngleInDegrees() - 30)).
 ```
 
 Choosing a smaller or a larger gain will result in a slower or a faster
-response of Starship to reach the desired angle.
-In our code, we refer to the proportional gain as <em>anglePGain</em> that we
+response of Starship in reaching the desired angle.
+In our code, we refer to the proportional gain as `anglePGain`, which we
 initialize to $0.1$ at the beginning.
-Moreover, we will use a proportional controller also further in the code,
-changing the desired angle appropriately.
 
 <p align="center">
   <img src="https://github.com/gsmfnc/StaRS2D_course/blob/main/lesson_02_proportional_control/imgs/a3_semi_proportional.png" />
@@ -136,7 +134,7 @@ thrust angle behaviour and a successful re-entry mission!
 ---
 
 **Exercise 1.**
-Try to change anglePGain with smaller or larger values to see how
+Experiment with anglePGain by assigning smaller or larger values and see how
 the overall behaviour of Starship changes.
 
 ---
@@ -145,23 +143,24 @@ the overall behaviour of Starship changes.
 
 We have now used a proportional controller to determine thrust angle commands
 to ensure that Starship reaches the desired $\theta$ angles.
-In control theory, we say that a controller with such a property is stabilizing
-and $\theta$ converges to its desired value.
+In control theory, we say that a controller with such a property is
+<em>stabilizing</em>
+and $\theta$ <em>converges</em> to its desired value.
 
 We could also design a similar controller for the thrust command, so that we can
 ensure convergence of the vertical speed to some desired value.
-Therefore, let's define a proportional controller for the thrust command as
+Therefore, let us define a proportional controller for the thrust command as
 well.
-Say that our desired descent velocity for the first phase is $-0.14$ pix/sec,
-then the error in this case would be $error=-0.14-V_y$.
+Say that our desired descent velocity for the first phase is $-0.14$ pix/sec:
+then, the error in this case would be error$=-0.14-V_y$.
 Thus, we can define a proportional controller using the following command:
 
 ```
 cmd.setThrustCommand(0.3 * (-0.14 - env.getStarshipVy()))
 ```
 
-where we chose the proportional gain to be $0.3$.
-We will refer to the thrust command proportional gain as <em>thrustPGain</em>
+where we choose the proportional gain to be $0.3$.
+We will refer to the thrust command proportional gain as `thrustPGain`
 and thus implement the controller for the first phase of descent as shown in
 the following figure.
 
@@ -184,7 +183,7 @@ again an error that will be compensated by a non-zero thrust command.
 ---
 
 **Exercise 2.**
-Change the proportional gain <em>thrustPGain</em> to see that
+Change the proportional gain `thrustPGain` to see that
 larger values will lead to shaky
 thrust commands keeping the vertical speed $V_y$ around the desired
 one (but without convergence),
@@ -194,7 +193,7 @@ the velocity close to the desired one (convergence with a static error).
 ---
 
 A classical solution to this problem is the addition of
-an integral term, making it a proportional-integral controller.
+an integral term, making it a <em>proportional-integral</em> controller.
 Mathematically speaking, this means that we will assign the thrust command as
 
 ```math
@@ -204,33 +203,33 @@ thrust=0.3(-0.14 - V_y)+0.1\int_0^t(-0.14-V_y)dt
 where $0.3$ is again the proportional gain and $0.1$ is the integral gain.
 
 Computing the exact integral is usually not possible in practice, so we use the
-fact that the integral can be approximated with the sum of all the errors up
-until the current time.
-To do so, we will have to introduce an auxiliary variable called
-<em>thrustIError</em>
-that is zero at the beginning and we will sum to it the current error for
+fact that the integral can be approximated by the sum of all the errors up
+to the current time.
+To do so, we introduce an auxiliary variable called
+`thrustIError`,
+which is initialized to zero, and we add to it the current error at
 every execution of the draw() function.
-Also, we will call <em>thrustIGain</em> the integral gain.
+We also refer to the intregral gain as `thrustIGain`.
 
 <p align="center">
   <img src="https://github.com/gsmfnc/StaRS2D_course/blob/main/lesson_02_proportional_control/imgs/a5_thrust_PI_first.png" />
 </p>
 
 We can observe that convergence to the desired vertical speed is now achieved.
-However, the code is now becoming a little complicated.
-Let's re-organize it, defining four phases of landing.
+However, the code is becoming a little complicated...
+let us re-organize it by defining four landing phases.
 
 ### Phase 1: Approach
 
-This first phase consists of moving towards the re-entry tower.
+This first phase consists of moving toward the re-entry tower.
 To do so, we need to lose height and move towards Starship's left.
 
-First, we define an auxiliary variable called <em>phase</em> that we will use to
-determine in which of the four phases we currently are.
+First, we define an auxiliary variable called `phase` that we will use to
+determine which of the four phases we currently are in.
 
-During this phase, we use a PI controller for the thrust command to have a
-desired vertical velocity of $-0.14$ pix/sec.
-Moreover, we use a P controller to keep an angle of $30$ degrees.
+Then, we use a PI controller for the thrust command to have a
+desired vertical velocity of $-0.14$ pix/sec and a P controller to keep an
+angle of $30$ degrees.
 
 <p align="center">
   <img src="https://github.com/gsmfnc/StaRS2D_course/blob/main/lesson_02_proportional_control/imgs/a6_phase1.png" />
@@ -239,16 +238,16 @@ Moreover, we use a P controller to keep an angle of $30$ degrees.
 ### Phase 2: Lose height 
 
 This phase starts when the $x$-coordinate of Starship is below $100$ pixels.
-Therefore, we set the variable <em>phase</em> equal to $2$ when such a condition
-is verified together with <em>phase</em> itself being equal to $1$.
-We do so to avoid that for some reason we go back to phase $2$ when we are in
+Therefore, we set the variable <em>phase</em> equal to $2$ when this condition
+is met **and** <em>phase</em> is currently equal to $1$.
+We do this to avoid, for some reason, going back to phase $2$ when we are in
 phase $3$ or $4$ (even though, switching to a previous phase may be useful in
-case of unexpected events...).
+case of unexpected events but this requires more thought...).
 
-We will start losing height by reducing the desired vertical velocity to
+We will start losing height by setting the desired vertical velocity to
 $-0.5$ pix/sec.
-Also, since we are getting closer to the re-entry tower, we start reducing
-the horizontal velocity by reducing Starship's angle to $10$ degrees.
+Also, since we are getting closer to the re-entry tower, we begin reducing
+the horizontal velocity by lowering Starship's angle to $10$ degrees.
 
 <p align="center">
   <img src="https://github.com/gsmfnc/StaRS2D_course/blob/main/lesson_02_proportional_control/imgs/a7_phase2.png" />
@@ -260,16 +259,16 @@ This phase starts when we have lost sufficient height, that is when the
 $y$-coordinate of Starship is equal to zero.
 
 Having $y=0$ is ideal as it is the height of our landing point, so we want to
-keep such a value.
+maintain such a value.
 Up until now, we defined the thrust command with respect to a desired velocity.
-To keep doing that, we will define our desired velocity proportionally to our
-desired $y$-coordinate.
+To continue doing that, we define our desired velocity proportionally to
+the desired $y$-coordinate.
 For example, we can say that our desired velocity is $0.1(0-y)$, where $0.1$ is
 the proportional gain.
-In such a way, our desired velocity will be positive when the $y$-coordinate is
+In this way, the desired velocity will be positive when the $y$-coordinate is
 below 0 pixels and negative otherwise.
-Also, the more the $y$-coordinate is "far" from $0$, the larger (positive or
-negative) vertical speed we will demand.
+Also, the farther the $y$-coordinate is from $0$, the larger (positive or
+negative) vertical speed we will command.
 
 <p align="center">
   <img src="https://github.com/gsmfnc/StaRS2D_course/blob/main/lesson_02_proportional_control/imgs/a8_phase3.png" />
@@ -277,13 +276,13 @@ negative) vertical speed we will demand.
 
 ### Phase 4: Keep height and further reduce angle
 
-This final phase starts when we are very close to the re-entry tower, hence
+This final phase starts when we are very close to the re-entry tower, that is
 when the $x$-coordinate is below $10$ pixels.
 
-The control objective is the same as before, we want to keep the height to
+The control objective is the same as before: we want to maintain the height at
 zero.
 Moreover, we require an angle of $0.3$ degree so that the horizontal velocity
-lies inside the requirements for a successful landing.
+remains within the requirements for a successful landing.
 
 <p align="center">
   <img src="https://github.com/gsmfnc/StaRS2D_course/blob/main/lesson_02_proportional_control/imgs/a9_phase4.png" />
@@ -296,18 +295,18 @@ We have implemented a thrust command controller based on desired vertical
 velocities.
 Try to implement a controller that is based on the $y$-position rather than
 $V_y$.
-In this case, you can ask to reach $y=0$ right from the beginning and then
-just keep moving horizontally towards the re-entry tower.
+In this case, you can ask Starship to reach $y=0$ right from the beginning and
+then simply keep moving horizontally toward the re-entry tower.
 
 **Exercise 4.**
 The thrust angle command allows convergence to desired $\theta$ angles.
 Try to define the desired $\theta$ based on a desired $x$-velocity.
-In such a way, you have direct control of the horizontal speed of Starship.
+In this way, you have direct control of Starship's horizontal speed.
 
 **Exercise 5.**
 Add an additional "emergency" phase that you activate as soon as you reach phase
 $2$.
-During the emergency phase, Starship needs to go back to $y=300$ pixels.
+During the emergency phase, Starship needs to return to $y=300$ pixels.
 After doing so, you can finalize the landing.
 
 ---
