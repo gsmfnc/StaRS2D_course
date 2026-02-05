@@ -217,12 +217,12 @@ $3$ pix/sec during the approach phase.
 #### Landing
 
 We keep slowing down until the vertical position is sufficiently close to the
-target vertical position, namely when $|y|<1pix$.
+target vertical position, namely when $|y|<1$ pix.
 At this point, the landing phase begins.
 
 During landing, the vertical position is maintained within the interval
 $[-1,1]$, while the commanded horizontal speed is reduced proportionally to the
-distance from the landing tower to a small residual value of $0.05pix/sec$.
+distance from the landing tower to a small residual value of $0.05$ pix/sec.
 
 During this phase, the controller is again composed of four nested loops.
 The structure of the controller is identical to that of the slow down phase,
@@ -237,7 +237,7 @@ proportional gain of $0.1$).
 When Starship reaches $x<10$, the desired horizontal speed is no longer reduced
 proportionally but fixed to a constant value of $0.05$ pix/sec, ensuring a
 successful landing.
-All these requirements can be achieved by defining vxDes as:
+All these requirements can be achieved by defining ```vxDes``` as:
 
 ```
 vxDes = max(0.0, min(1.0, vxPGain * (env.getStarshipXPosition() - 10.0))) + 0.05;
