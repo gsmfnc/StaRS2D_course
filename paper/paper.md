@@ -18,7 +18,7 @@ bibliography: paper.bib
 
 This paper presents an open-source course to introduce the reader to control
 engineering.
-Through the use of a 2D Starship simulator on Processing [reas2006processing],
+Through the use of a 2D Starship simulator on Processing `[reas2006processing]`,
 the reader will be guided to design
 controllers that complete the fascinating re-entry task.
 
@@ -39,7 +39,7 @@ of a real-world-inspired problem.
 
 The course presented in this paper aims at giving insights on what control
 engineering is through a simple 2D Starship simulator
-(StaRS 2D [@gismondi2025stars2d]).
+(StaRS 2D `[@gismondi2025stars2d]`).
 This simulator allows to interact with Starship during its re-entry task.
 Control engineering is crucial in the outcome of this mission and Starship has
 gained lots of attention, thus making this course a possible motivating and
