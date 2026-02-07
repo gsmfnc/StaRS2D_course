@@ -1,5 +1,5 @@
 # Learn the basics of Control Engineering with StaRS 2D
-## Lesson 2: Proportional-Integral (PI) controller
+## Lesson 2: Proportional-Integral (PI) Controllers
 
 <br>
 <p align="center">

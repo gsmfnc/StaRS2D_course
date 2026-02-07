@@ -1,5 +1,5 @@
 # Learn the basics of Control Engineering with StaRS 2D
-## Lesson 1: A basic flight controller
+## Lesson 1: A Basic Flight Controller
 
 <br>
 <p align="center">

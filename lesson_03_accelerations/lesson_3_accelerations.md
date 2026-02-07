@@ -1,5 +1,5 @@
 # Learn the basics of Control Engineering with StaRS 2D
-## Lesson 3: A more realistic Starship model
+## Lesson 3: A More Realistic Starship Model
 
 <br>
 <p align="center">
