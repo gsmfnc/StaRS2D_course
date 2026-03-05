@@ -11,7 +11,6 @@ date: 15 October 2025
 bibliography: paper.bib
 ---
 
-
 ---
 
 # Summary
@@ -25,7 +24,7 @@ controllers that complete the fascinating re-entry task.
 # Statement of Need
 
 Control engineering is becoming more and more important nowadays: just to
-give you an idea, the design of
+give an idea, the design of
 modern aircraft, spaceships, industrial automation and autonomous cars heavily
 relies on it.
 However, even though control is everywhere, it is unknown to most.
@@ -34,14 +33,15 @@ Young students interested in technology typically think of control concepts as
 abstract and have difficulties in finding how they relate to real-world
 applications.
 This course represents a first step to fill the gap by introducing control
-engineering concepts without intimidating mathematics and relying on a simulator
+engineering concepts without complicated mathematics and relying on a simulator
 of a real-world-inspired problem.
 
 The course presented in this paper aims at giving insights on what control
 engineering is through a simple 2D Starship simulator
-(StaRS 2D `[@gismondi2025stars2d]`).
+(StaRS 2D `[@gismondi2025stars2d]`) implemented in Processing
+`[@reas2006processing]`.
 This simulator allows to interact with Starship during its re-entry task.
-Control engineering is crucial in the outcome of this mission and Starship has
+Control engineering is crucial for the outcome of this mission and Starship has
 gained lots of attention, thus making this course a possible motivating and
 fascinating entry point to control theory.
 
@@ -90,9 +90,26 @@ The reader understands how to separate control objectives and design a
 hierarchical PI controller.
 
 # Conclusion
-- Reiterate the importance of control engineering in modern technology.
-- Summarize how the course and simulator address educational gaps.
-- Emphasize accessibility, intuition, and engagement.
-- Outline future directions for expansion and evaluation.
+
+Control engineering plays a crucial role in the development of modern
+technology.
+This paper proposes a course designed to introduce young learners to this field
+by
+allowing them to guide Starship safely to the launch tower through a 2D
+simulator.
+The mathematical complexity behind control engineering is deliberately set aside
+and the reader
+is guided directly into the design of a flight controller, providing a practical
+demonstration of its operating principles.
+The simulator is lightweight, implemented in the open-source software
+Processing and requires minimal setup, making it easily accessible for
+educational use.
+
+Future work will deal with the development of simulators and courses centered on
+other exciting applications of control engineering.
+Moreover, the course material will gradually include the mathematical
+foundations of
+control engineering, giving an immediate illustration of their practical
+interpretation.
 
 # References
