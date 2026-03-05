@@ -6,7 +6,7 @@ This repository contains the material for the course
 "Learn the basics of Control Engineering with StaRS 2D".
 The goal of the course is to introduce the basic ideas of control engineering
 to young learners and beginners.
-Instead of focusing on complicated mathematics, this course introduces control  
+Instead of focusing on complicated mathematics, this course introduces control
 concepts through an engaging example: guiding Starship during
 re-entry and landing.
 
@@ -14,7 +14,7 @@ re-entry and landing.
 
 The course is composed of three lessons that gradually introduce a robust
 flight controller.
-Each lesson builds upon the previous one, allowing students to understand the  
+Each lesson builds upon the previous one, allowing students to understand the
 limitations of simple controllers and explore more robust strategies.
 
 | Lesson | Link |
@@ -28,6 +28,6 @@ limitations of simple controllers and explore more robust strategies.
 The course relies on the [StaRS2D simulator](https://github.com/gsmfnc/StaRS2D)
 (2D Starship Re-entry Simulator),
 an educational simulation environment used to visualize the landing task.
-StaRS2D is a lightweight 2D simulator implemented in the open-source  
-environment Processing.
-It models simplified dynamics of Starship during the re-entry and landing phase.
+StaRS2D is a lightweight 2D simulator implemented in the open-source
+environment Processing and
+it models simplified dynamics of Starship during the re-entry and landing phase.
