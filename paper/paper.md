@@ -7,7 +7,11 @@ tags:
 authors:
   - name: Francesco Gismondi
     orcid: 0000-0002-3506-4077
-date: 15 October 2025
+    affiliation: "1" # (Multiple affiliations must be quoted)
+affiliations:
+ - name: Independent Researcher
+   index: 1
+date: 8 March 2026
 bibliography: paper.bib
 ---
 
